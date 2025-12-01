@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/Fate-Emerald-Abyss/backend" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/Fate-Emerald-Abyss/frontend" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/Fate-Emerald-Abyss/frontend" />
+            <option value="$PROJECT_DIR$/Fate-Emerald-Abyss/frontend/core" />
+            <option value="$PROJECT_DIR$/Fate-Emerald-Abyss/frontend/lwjgl3" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
