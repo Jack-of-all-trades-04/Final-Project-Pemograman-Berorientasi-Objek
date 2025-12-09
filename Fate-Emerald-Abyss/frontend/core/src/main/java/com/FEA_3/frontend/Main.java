@@ -1,32 +1,26 @@
 package com.FEA_3.frontend;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.FEA_3.frontend.Core.BattleScreen;
+import com.FEA_3.frontend.Core.MainMenuScreen;
+import com.badlogic.gdx.Game;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class Main extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+public class Main extends Game {
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
+        // Mulai dari Main Menu
+        this.setScreen(new MainMenuScreen(this));
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        batch.draw(image, 140, 210);
-        batch.end();
+        // PENTING: Panggil super.render() agar BattleScreen.render() dijalankan
+        super.render();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+        // Panggil dispose pada screen yang sedang aktif
+        if (screen != null) screen.dispose();
     }
 }
