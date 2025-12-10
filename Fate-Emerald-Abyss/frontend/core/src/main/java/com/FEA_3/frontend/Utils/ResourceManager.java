@@ -2,9 +2,6 @@ package com.FEA_3.frontend.Utils;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class ResourceManager {
@@ -28,6 +25,7 @@ public class ResourceManager {
         assetManager.load("Utility/uiskin.json", Skin.class);
 
         assetManager.load("Background/Temps.png", Texture.class);
+        assetManager.load("Background/MainMenu.png", Texture.class);
 
         assetManager.finishLoading(); // Tunggu sampai semua selesai dimuat
     }

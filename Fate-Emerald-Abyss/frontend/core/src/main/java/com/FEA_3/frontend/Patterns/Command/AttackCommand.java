@@ -1,7 +1,7 @@
 package com.FEA_3.frontend.Patterns.Command;
 
 import com.FEA_3.frontend.Core.UnitState;
-import com.FEA_3.frontend.Utils.GameUnit;
+import com.FEA_3.frontend.Entity.GameUnit;
 
 public class AttackCommand implements Command {
     private GameUnit attacker;

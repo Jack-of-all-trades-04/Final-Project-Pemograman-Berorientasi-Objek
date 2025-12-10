@@ -1,9 +1,9 @@
 package com.FEA_3.frontend.Patterns.Factory;
 
 import com.FEA_3.frontend.Core.EnemyType;
+import com.FEA_3.frontend.Entity.GameUnit;
+import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Patterns.Strategy.AggressiveStrategy;
-//import com.FEA_3.frontend.Patterns.Strategy.DefensiveStrategy;
-import com.FEA_3.frontend.Utils.GameUnit;
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -11,24 +11,28 @@ public class UnitFactory {
 
     public static GameUnit createEnemy(EnemyType type) {
         GameUnit enemy = null;
+        UnitStats stats = null; // Siapkan wadah stats
 
         switch (type) {
             case SKELETON:
-                // Kroco biasa: HP Kecil, Attack Sedang
-                enemy = new GameUnit("Skeleton", 200, 30);
-                enemy.setStrategy(new AggressiveStrategy()); // AI Agresif
+                // 1. Buat Stats dulu
+                stats = new UnitStats("Skeleton", 200, 30);
+                // 2. Masukkan Stats ke GameUnit
+                enemy = new GameUnit(stats);
+
+                // 3. Set Strategy
+                enemy.setStrategy(new AggressiveStrategy());
                 break;
 
             case SLIME:
-                // Musuh lemah: HP Tebal, Attack Lemah
-                enemy = new GameUnit("Slime", 300, 10);
+                stats = new UnitStats("Slime", 300, 10);
+                enemy = new GameUnit(stats);
                 enemy.setStrategy(new AggressiveStrategy());
-                // Nanti bisa ganti strategi 'Passive' jika ada
                 break;
 
             case DRAGON_BOSS:
-                // BOSS: HP Tebal, Attack Sakit
-                enemy = new GameUnit("Bahamut", 2000, 150);
+                stats = new UnitStats("Bahamut", 2000, 150);
+                enemy = new GameUnit(stats);
                 enemy.setStrategy(new AggressiveStrategy());
                 break;
         }
@@ -36,11 +40,8 @@ public class UnitFactory {
         return enemy;
     }
 
-    // Helper untuk mengambil texture berdasarkan tipe (Opsional, agar rapi di Screen)
+    // Method getEnemyTexture tetap sama...
     public static Texture getEnemyTexture(EnemyType type) {
-        // Disini kita mapping Tipe -> File Gambar
-        // Sementara pakai placeholder "Idle1.png" untuk semua
-        // Nanti bisa di-switch case juga
         return ResourceManager.getInstance().getTexture("Entity/Enemy/Idle1.png");
     }
 }

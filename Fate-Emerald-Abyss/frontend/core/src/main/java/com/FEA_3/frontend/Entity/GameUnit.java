@@ -1,4 +1,4 @@
-package com.FEA_3.frontend.Utils;
+package com.FEA_3.frontend.Entity;
 
 import com.FEA_3.frontend.Core.UnitState;
 import com.FEA_3.frontend.Patterns.Command.Command;
@@ -16,6 +16,11 @@ public class GameUnit {
     private BattleStrategy strategy;
     private UnitState state = UnitState.IDLE;
     private float stateTimer = 0f;
+    private UnitStats stats;
+
+    public GameUnit(UnitStats stats){
+        this.stats = stats;
+    }
 
     // Method untuk ganti state
     public void setState(UnitState newState) {
@@ -56,22 +61,17 @@ public class GameUnit {
         }
     }
 
-    public GameUnit(String name, int maxHp, int attackPower) {
-        this.name = name;
-        this.maxHp = maxHp;
-        this.hp = maxHp;
-        this.attackPower = attackPower;
-    }
-
     public void addObserver(UnitObserver observer) {
         observers.add(observer);
     }
 
     public void takeDamage(int dmg) {
-        this.hp -= dmg;
-        if (this.hp < 0) this.hp = 0;
+        int newHp = stats.getCurrentHp() - dmg;
+        if (newHp < 0) newHp = 0;
 
-        System.out.println(name + " terkena " + dmg + " damage!");
+        stats.setCurrentHp(newHp); // Update stat
+
+        System.out.println(stats.getName() + " terkena " + dmg + " damage!");
 
         // BERITAHU SEMUA OBSERVER BAHWA HP BERUBAH
         notifyObservers();
@@ -84,8 +84,8 @@ public class GameUnit {
     }
 
     public boolean isDead() { return hp <= 0; }
-    public int getAttackPower() { return attackPower; }
-    public String getName() { return name; }
-    public int getHp() { return hp; }         // Getter baru
-    public int getMaxHp() { return maxHp; }   // Getter baru
+    public int getAttackPower() { return stats.getAttackPower(); }
+    public String getName() { return stats.getName(); }
+    public int getHp() { return stats.getCurrentHp(); }
+    public int getMaxHp() { return stats.getMaxHp(); }
 }
