@@ -32,6 +32,7 @@ public class ResourceManager {
         assetManager.finishLoading(); // Tunggu sampai semua selesai dimuat
     }
 
+    // Melakukan update texture
     public Texture getTexture(String path) {
         if (!assetManager.isLoaded(path, Texture.class)) {
             assetManager.load(path, Texture.class);
@@ -47,6 +48,8 @@ public class ResourceManager {
     public void dispose() {
         assetManager.dispose();
     }
+
+    // Menambah manager untuk music dan sound
 
     public Music getMusic(String path) {
         if (!assetManager.isLoaded(path, Music.class)) {

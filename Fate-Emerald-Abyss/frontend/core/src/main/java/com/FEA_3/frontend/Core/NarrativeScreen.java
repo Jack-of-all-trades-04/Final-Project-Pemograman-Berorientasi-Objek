@@ -24,12 +24,13 @@ public class NarrativeScreen implements Screen {
     private Label nameLabel;
     private Label dialogLabel;
 
+    // Membuat class baru agar tidak hanya menggunakan satu tipe string saja
     private static class StoryStep {
         String text;
         String backgroundPath = null;
         String soundtrackPath = null;
         String sfxPath = null;
-        boolean triggerBattle = false;
+        boolean triggerBattle = false; // Digunakan untuk menentukan kapan memulai battle
 
         public StoryStep(String text) {
             this.text = text;
@@ -50,6 +51,7 @@ public class NarrativeScreen implements Screen {
         }
     }
 
+    // Helper 'line' agar memudahkan dalam memasukkan teks
     private static StoryStep line(String text) {
         return new StoryStep(text);
     }
@@ -247,6 +249,7 @@ public class NarrativeScreen implements Screen {
         }
     }
 
+    // drawCharacter() digunakan untuk memudahkan render karakter (helper)
     private void drawCharacter(Texture texture, boolean isRightSide) {
         float width = 300;
         float height = 450;
@@ -274,7 +277,7 @@ public class NarrativeScreen implements Screen {
         stage.getBatch().begin();
         stage.getBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        String currentText = script[scriptIndex].text; // Store text in a variable for readability
+        String currentText = script[scriptIndex].text; // Menggunakan currentTeks agar mudah dibaca
 
         if (currentText.startsWith("MC")) {
             drawCharacter(characterImg, false);
