@@ -19,6 +19,8 @@ public class UnitFactory {
                 stats = new UnitStats("Skeleton", 200, 30);
                 // 2. Masukkan Stats ke GameUnit
                 enemy = new GameUnit(stats);
+                stats.setExpReward(50);       // Dapat 50 EXP
+                stats.setCrystalReward(10);   // Dapat 10 Crystal
 
                 // 3. Set Strategy
                 enemy.setStrategy(new AggressiveStrategy());
@@ -27,12 +29,16 @@ public class UnitFactory {
             case SLIME:
                 stats = new UnitStats("Slime", 300, 10);
                 enemy = new GameUnit(stats);
+                stats.setExpReward(50);       // Dapat 50 EXP
+                stats.setCrystalReward(10);   // Dapat 10 Crystal
                 enemy.setStrategy(new AggressiveStrategy());
                 break;
 
             case DRAGON_BOSS:
                 stats = new UnitStats("Bahamut", 2000, 150);
                 enemy = new GameUnit(stats);
+                stats.setExpReward(50);       // Dapat 50 EXP
+                stats.setCrystalReward(10);   // Dapat 10 Crystal
                 enemy.setStrategy(new AggressiveStrategy());
                 break;
         }

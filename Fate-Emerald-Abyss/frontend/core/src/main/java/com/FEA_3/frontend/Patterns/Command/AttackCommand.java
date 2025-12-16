@@ -2,6 +2,8 @@ package com.FEA_3.frontend.Patterns.Command;
 
 import com.FEA_3.frontend.Core.UnitState;
 import com.FEA_3.frontend.Entity.GameUnit;
+import com.FEA_3.frontend.Utils.ResourceManager;
+import com.badlogic.gdx.audio.Sound;
 
 public class AttackCommand implements Command {
     private GameUnit attacker;
@@ -14,15 +16,16 @@ public class AttackCommand implements Command {
 
     @Override
     public void execute() {
-        // 1. Ubah State Penyerang -> ATTACK
+        // 1. Play Sound
+        Sound sfx = ResourceManager.getInstance().getSound("Audio/Sound_Effect/Attack1.wav");
+        // Mainkan dengan pitch acak sedikit (0.9 - 1.1) agar tidak terdengar monoton
+        long id = sfx.play();
+        sfx.setPitch(id, 0.9f + (float)(Math.random() * 0.2f));
+
+        // 2. Logic Attack
         attacker.setState(UnitState.ATTACK);
-
-        // 2. Hitung Damage
         int dmg = attacker.getAttackPower();
-
-        // 3. Ubah State Korban -> HURT (Lewat takeDamage atau set manual)
         target.takeDamage(dmg);
-        // Tips: Bisa tambahkan logic di takeDamage() milik GameUnit agar otomatis set HURT
         target.setState(UnitState.HURT);
     }
 }

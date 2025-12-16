@@ -10,13 +10,16 @@ import java.util.List;
 
 public class GameUnit {
     private String name;
-    private int hp;
-    private int maxHp;
-    private int attackPower;
+    private UnitStats stats; // Kita pakai ini sekarang
     private BattleStrategy strategy;
+    private List<UnitObserver> observers = new ArrayList<>();
     private UnitState state = UnitState.IDLE;
     private float stateTimer = 0f;
-    private UnitStats stats;
+    private boolean isDefending = false;
+
+    public void setDefending(boolean defending) {
+        this.isDefending = defending;
+    }
 
     public GameUnit(UnitStats stats){
         this.stats = stats;
@@ -44,9 +47,6 @@ public class GameUnit {
     public UnitState getState() { return state; }
     public float getStateTimer() { return stateTimer; }
 
-    // List pendengar (Observer)
-    private List<UnitObserver> observers = new ArrayList<>();
-
     // Constructor UPDATE (tambah parameter strategy opsional)
     // Atau buat setter saja biar gampang
     public void setStrategy(BattleStrategy strategy) {
@@ -66,6 +66,11 @@ public class GameUnit {
     }
 
     public void takeDamage(int dmg) {
+        if (isDefending) {
+            dmg /= 2;
+            System.out.println(stats.getName() + " is defending! Damage reduced.");
+            isDefending = false; // Reset defend setelah kena pukul
+        }
         int newHp = stats.getCurrentHp() - dmg;
         if (newHp < 0) newHp = 0;
 
@@ -79,13 +84,19 @@ public class GameUnit {
 
     private void notifyObservers() {
         for (UnitObserver observer : observers) {
-            observer.onHealthChanged(hp, maxHp);
+            observer.onHealthChanged(stats.getCurrentHp(), stats.getMaxHp());
         }
     }
 
-    public boolean isDead() { return hp <= 0; }
+    public boolean isDead() {
+        // Cek nyawa dari stats, BUKAN dari variabel lokal
+        return stats.getCurrentHp() <= 0;
+    }
     public int getAttackPower() { return stats.getAttackPower(); }
     public String getName() { return stats.getName(); }
     public int getHp() { return stats.getCurrentHp(); }
     public int getMaxHp() { return stats.getMaxHp(); }
+    public UnitStats getStats() {
+        return this.stats;
+    }
 }
