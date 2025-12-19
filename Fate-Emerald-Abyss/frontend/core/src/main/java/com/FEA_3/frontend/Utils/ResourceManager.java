@@ -41,8 +41,13 @@ public class ResourceManager {
         assetManager.finishLoading(); // Tunggu sampai semua selesai dimuat
     }
 
-    public Texture getTexture(String name) {
-        return assetManager.get(name, Texture.class);
+    // Melakukan update texture
+    public Texture getTexture(String path) {
+        if (!assetManager.isLoaded(path, Texture.class)) {
+            assetManager.load(path, Texture.class);
+            assetManager.finishLoading();
+        }
+        return assetManager.get(path, Texture.class);
     }
 
     public Skin getSkin() {
@@ -52,13 +57,22 @@ public class ResourceManager {
     public void dispose() {
         assetManager.dispose();
     }
-    // Helper untuk ambil Music
-    public Music getMusic(String name) {
-        return assetManager.get(name, Music.class);
+
+    // Menambah manager untuk music dan sound
+
+    public Music getMusic(String path) {
+        if (!assetManager.isLoaded(path, Music.class)) {
+            assetManager.load(path, Music.class);
+            assetManager.finishLoading();
+        }
+        return assetManager.get(path, Music.class);
     }
 
-    // Helper untuk ambil Sound
-    public Sound getSound(String name) {
-        return assetManager.get(name, Sound.class);
+    public Sound getSound(String path) {
+        if (!assetManager.isLoaded(path, Sound.class)) {
+            assetManager.load(path, Sound.class);
+            assetManager.finishLoading();
+        }
+        return assetManager.get(path, Sound.class);
     }
 }
