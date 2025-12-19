@@ -61,44 +61,54 @@ public class NarrativeScreen implements Screen {
         line("Dear all, do you think there is even any meaning to this life?")
             .setBackground("Background/Dream.png")
             .setSoundtrack("Soundtrack/Dream.mp3"),
-        line("Why should I live and continue this life?"),
+        line("Why should I live and continue this life? What's make life worth living?"),
         line("Someone said that you have to live the best of your life, but what does it mean by best?"),
-        line("Is achieving something great really matters? If we already achieved it, then what?"),
+        line("Is achieving something great really matters? If we already achieved it, then what's next?"),
         line("Is pleasure and happiness from achieving it actually the meaning itself?"),
         line("But, is happiness really ultimate meaning to our life?"),
-        line("What is meaning?"),
+        line("What is even a meaning? How do we consider something as a true meaning?"),
         line("I don't know..."),
         line("Can I even get out from this abyss of meaning?"),
         line("Well..."),
-        line("Even to this day, I still don't know what's the answer is..."),
-        line("Librarian: 'Hey...'")
+        line("Even to this day, when I always ponder on these questions, I still don't know what's the answer is..."),
+        line("Maybe.."),
+        line("Someday.."),
+        line("I will find the answer"),
+        line("...")
+            .setSoundtrack("STOP"),
+        line("......"),
+        line("Librarian: 'Hey...'"),
+        line("..."),
+        line("Librarian: 'Hey, WAKE UP, do you know it is prohibited to sleep in library?'")
             .setBackground("Background/Library.jpg")
+            .setSoundEffect("SFX/TableSlam.mp3"),
+        line("MC: 'Alright-alright, I will wake up, jeez, do you know that there is a rule to not shouting in library?'")
             .setSoundtrack("Soundtrack/Library.mp3"),
-        line("..."),
-        line("Librarian: 'Hey, WAKE UP, do you know it is prohibited to sleep in library?'"),
-        line("MC: 'Alright-alright, I will wake up, jeez, do you know that there is a rule to not shouting in library?'"),
         line("Librarian: 'It is an exception, sacrificing a little stability to prevent greater chaos is acceptable'"),
-        line("MC: 'If you said so, I guess I can't argue with that'"),
+        line("MC: 'What the hell? If you said so, I guess I can't argue with that'"),
         line("This is one library in Faculty of Magecraft in University of Indonesia."),
-        line("The existence of faculty itself is concealed from the public..."),
-        line("And if you think ordinary people can accidentally find it, then nope. This faculty exist in different space-time spectrum."),
-        line("By the way, In this library, I just happen to like reading any books of my interests, there is philosophy, math, computing, science, engineering, anatomy, psychology, magecraft theory, and eventually history itself."),
-        line("Sometimes, it just become my habit to sleep in library while reading a book."),
+        line("The existence of faculty itself is concealed from the public, only special members such as higher board of rectorate itself have privilege to know such faculty exist"),
+        line("And if you think ordinary people can accidentally find it, then the chance is infinitesimal."),
+        line("This faculty exist in different space-time spectrum."),
+        line("Only those who have handful knowledge of magecraft can access it"),
+        line("By the way, In this library, I just happen to like reading any books of my interests."),
+        line("philosophy, math, computing, science, engineering, anatomy, psychology, magecraft theory, and eventually history itself."),
+        line("Sometimes, it is just becoming of my habit to sleep in library while reading a book."),
         line("..."),
+        line("There is sentence that's just lingering in my mind recently"),
         line("'Leaver dea as slaef.'")
             .setBackground("Background/BookPage.jpeg")
             .setSoundEffect("SFX/BookOpening.mp3"),
-        line("It is a quote from a history book I read, the meaning is 'it is better to die instead of being a slave?'"),
+        line("It is a quote from a history book I read, English-wise it means 'it is better to die instead of being a slave'"),
         line("What does it mean by slave?"),
         line("MC: 'Hey, do you know the meaning of this part of sentence?'")
             .setBackground("Background/Library.jpg"),
-        line("Librarian: 'I think this quote saying about free will, if your life is tied by someone will, would you accept it or rebel against it?'"),
-        line("MC: 'I don't know, but here is my unpopular opinion, if someone who's tying their will is keeping them safe...'"),
-        line("Librarian: 'Well, I guess that's a one way to interpret it...'"),
-        line("MC: 'That makes sense. In modern society, there are those worker who forced to do what their supervisor said...'"),
+        line("Librarian: 'I think this quote is saying about free will. Let me ask you a question, if your life is tied by someone will, would you accept it or rebel against it?'"),
+        line("MC: 'I don't know, but here is my unpopular opinion, if someone who's tying their will is keeping them safe, well, and healthy, Is it bad to let them free since they could choose the wrong path that can destroy themself?'"),
+        line("Librarian: 'Well, I guess that's a one way to interpret it, I think it is up to them what are they valuing more, free will of a sufferer or safety of a slave'"),
+        line("MC: 'That makes sense. In modern society, there are those worker who forced to do what their supervisor said without even noticing or questioning if that's not part of their job description. What a straight slavery'"),
         line("Well, pondering about it desperately would never make me understand. I guess let's settle it for now."),
-        line("And then there is this strange sign in my hand, it just abruptly appear out of nowhere some days ago..."),
-        line("No pain or any anomaly resulting from this sign, only a sign that makes my appearance of hand peculiar, so i just hide it using gloves."),
+        line("And then there is this strange sign in my hand, it just abruptly appear out of nowhere some days ago, no pain or any anomaly resulting from this sign, only a sign that makes my appearance of hand peculiar, so i just hide it using gloves."),
         line("Realizing it has been already this late, i guess i need to go home."),
         line("I usually return to my home using public transport such as train and bus.")
             .setBackground("Background/TightAlley.jpeg")
@@ -106,6 +116,7 @@ public class NarrativeScreen implements Screen {
         line("And i think the process of returning itself is satisfying."),
         line("I can contemplate anything i like. Thinking about it, i still don't know what is this sign in my hand..."),
         line("Just sometimes after contemplating, i just hearing something at this quiet alley..."),
+        line("Suspicious Guy: ..."),
         line("It appears to be a suspicious guy using a strange suit..."),
         line("This guy suddenly just throwing a knife at me."),
         line("MC : 'Wha??'")
@@ -121,16 +132,17 @@ public class NarrativeScreen implements Screen {
         line("MC: 'I really don't know, i am trying to search what is this'"),
         line("Unknown Voice: 'It is command spells, you are qualified as a master at incoming Holy Grail War'"),
         line("MC: 'Me, a master? I see'"),
-        line("Unknown Voice: 'Hey, don't just stop like that, you have to summon me immediately...'"),
+        line("I just remember there is servant contract system in such a war where command spells is given to every master to command their servant, I think this is one of it huh, i don't know which war i was involved in and why i am being involved, but i guess lets finish this predicament first"),
+        line("Unknown Voice: 'Hey, don't just stop like that, you have to summon me immediately, i could not accelerate our perception any longer, you don't wanna get killed don't you?'"),
         line("Well, at this point I don't have a choice to reject the involvement since I can die if rejecting it."),
-        line("Not long the reality and time itself is coming back to normal."),
+        line("Not long after that, the reality and time itself is coming back to normal."),
         line("MC: 'Alright. Then I shalt summon thee... COME!!!'"),
-        line("After spelling such command, appear a tall girl with a big two-handed sword..."),
+        line("After spelling such command, appear a tall girl with a big two-handed sword ready at her hand ready to fight back a suspicious guy, from the image I get, i think my servant is Saber-class servant."),
         line("Saber: 'Hello there, let me handle this guy first'"),
         line("Saber: 'Hey, you are Assassin right?"),
         line("Suspicious Guy: '...'"),
         line("Saber: 'Not answering anything... what a typical assassin'"),
-        line("Suspicious Guy: [Escape and disapper]"),
+        line("Suspicious Guy: [Escape and disappear]"),
         line("Saber: 'Tch, I guess we don't know anything huh?'"),
         line("Saber: 'Alright Master, let's get into safe place'"),
         line("Saber: Well Master, let me introduce myself. I am Pier Gerlofs Donia..."),
@@ -214,12 +226,19 @@ public class NarrativeScreen implements Screen {
 
     private void updateSceneData() {
         StoryStep currentStep = script[scriptIndex];
+        String newPath = currentStep.soundtrackPath;
 
         if (currentStep.backgroundPath != null) {
             backgroundTexture = ResourceManager.getInstance().getTexture(currentStep.backgroundPath);
         }
-
-        if (currentStep.soundtrackPath != null && !currentStep.soundtrackPath.equals(currentSoundtrackPath)) {
+        if ("STOP".equals(newPath)) {
+            if (currentSoundtrack != null) {
+                currentSoundtrack.stop(); // Mematikan musik
+            }
+            currentSoundtrack = null;     // Mengosongkan variabel object musik
+            currentSoundtrackPath = "STOP"; // Menandai bahwa status sekarang adalah hening
+        }
+        else if (currentStep.soundtrackPath != null && !currentStep.soundtrackPath.equals(currentSoundtrackPath)) {
             if (currentSoundtrack != null) currentSoundtrack.stop();
 
             currentSoundtrack = ResourceManager.getInstance().getMusic(currentStep.soundtrackPath);
