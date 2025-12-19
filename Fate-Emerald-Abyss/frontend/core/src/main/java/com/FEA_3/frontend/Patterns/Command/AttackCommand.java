@@ -25,7 +25,7 @@ public class AttackCommand implements Command {
         // 2. Logic Attack
         attacker.setState(UnitState.ATTACK);
         int dmg = attacker.getAttackPower();
-        target.takeDamage(dmg);
+        target.takeDamage(dmg, false);
         target.setState(UnitState.HURT);
     }
 }

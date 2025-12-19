@@ -7,15 +7,51 @@ import com.FEA_3.frontend.Patterns.Strategy.BattleStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameUnit {
     private String name;
-    private UnitStats stats; // Kita pakai ini sekarang
+    private UnitStats stats;
+    private Random rng = new Random();
     private BattleStrategy strategy;
     private List<UnitObserver> observers = new ArrayList<>();
     private UnitState state = UnitState.IDLE;
     private float stateTimer = 0f;
     private boolean isDefending = false;
+
+    public void attackTarget(GameUnit target) {
+        // 1. CEK ACCURACY (Level Difference Penalty)
+        float hitChance = stats.getAccuracy();
+        int levelDiff = target.getStats().getLevel() - this.stats.getLevel();
+
+        // Jika musuh lebih tinggi levelnya, akurasi turun 5% per level
+        if (levelDiff > 0) {
+            hitChance -= (levelDiff * 5.0f);
+        }
+
+        // Roll RNG (0-100)
+        if (rng.nextFloat() * 100 > hitChance) {
+            System.out.println("MISS! Serangan meleset.");
+            // Tampilkan text "MISS" di UI nanti
+            return;
+        }
+
+        // 2. HITUNG DAMAGE DASAR (ATK vs DEF)
+        // Rumus RPG Klasik: Damage = Atk * (100 / (100 + Def))
+        float damageMitigation = 100.0f / (100.0f + target.getStats().getDefense());
+        int finalDamage = (int) (stats.getAttackPower() * damageMitigation);
+
+        // 3. CEK CRITICAL
+        boolean isCrit = false;
+        if (rng.nextFloat() * 100 < stats.getCritChance()) {
+            isCrit = true;
+            // Crit Damage: 150% -> 1.5x
+            finalDamage *= (stats.getCritDamage() / 100.0f);
+        }
+
+        // 4. EKSEKUSI DAMAGE KE TARGET
+        target.takeDamage(finalDamage, isCrit);
+    }
 
     public void setDefending(boolean defending) {
         this.isDefending = defending;
@@ -23,6 +59,36 @@ public class GameUnit {
 
     public GameUnit(UnitStats stats){
         this.stats = stats;
+    }
+
+    // Tambahkan List Skill
+    private List<Skill> skills = new ArrayList<>();
+    private List<Skill> activeSkills = new ArrayList<>(); // Skill yang sudah unlocked
+
+    public void addSkill(Skill s) {
+        skills.add(s);
+        checkUnlockSkills();
+    }
+
+    // Panggil ini setiap Level Up
+    public void checkUnlockSkills() {
+        activeSkills.clear();
+        int currentLvl = stats.getLevel();
+
+        for (Skill s : skills) {
+            if (currentLvl >= s.getUnlockLevel()) {
+                activeSkills.add(s);
+
+                // Jika Passive, langsung apply efeknya sekali saja (atau tiap battle start)
+                if (s.getType() == Skill.SkillType.PASSIVE) {
+                    s.use(this, null);
+                }
+            }
+        }
+    }
+
+    public List<Skill> getUnlockedSkills() {
+        return activeSkills;
     }
 
     // Method untuk ganti state
@@ -65,21 +131,23 @@ public class GameUnit {
         observers.add(observer);
     }
 
-    public void takeDamage(int dmg) {
+    // Update takeDamage untuk handle UI Critical
+    public void takeDamage(int dmg, boolean isCrit) {
         if (isDefending) {
             dmg /= 2;
-            System.out.println(stats.getName() + " is defending! Damage reduced.");
-            isDefending = false; // Reset defend setelah kena pukul
+            isDefending = false;
         }
-        int newHp = stats.getCurrentHp() - dmg;
+
+        int current = stats.getCurrentHp();
+        int newHp = current - dmg;
         if (newHp < 0) newHp = 0;
+        stats.setCurrentHp(newHp);
 
-        stats.setCurrentHp(newHp); // Update stat
+        // Log
+        String critText = isCrit ? " (CRITICAL!)" : "";
+        System.out.println(stats.getName() + " terkena " + dmg + " damage" + critText);
 
-        System.out.println(stats.getName() + " terkena " + dmg + " damage!");
-
-        // BERITAHU SEMUA OBSERVER BAHWA HP BERUBAH
-        notifyObservers();
+        notifyObservers(); // Perlu update observer untuk kirim status crit nanti
     }
 
     private void notifyObservers() {

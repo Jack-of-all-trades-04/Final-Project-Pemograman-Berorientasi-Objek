@@ -1,6 +1,7 @@
 package com.FEA_3.frontend.Core;
 
 import com.FEA_3.frontend.Main;
+import com.FEA_3.frontend.Patterns.Factory.UnitFactory;
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -10,103 +11,158 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.util.Random;
 
 public class WorldMapScreen implements Screen {
     private Main game;
     private Stage stage;
     private Texture mapTexture;
-    private Texture nodeTexture; // Gambar titik merah/pin
+
+    // Texture untuk masing-masing jenis Node
+    private Texture battleNodeTex;
+    private Texture storyNodeTex;
+    private Texture shopNodeTex;
+
+    // Enum untuk Jenis Node
+    public enum NodeType {
+        MAIN_STORY,
+        RANDOM_BATTLE,
+        SHOP
+    }
 
     public WorldMapScreen(Main game) {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // 1. Load Gambar Peta
-        // Pastikan Anda sudah load ini di ResourceManager atau load manual disini
         try {
             mapTexture = new Texture(Gdx.files.internal("Background/WorldMap.png"));
         } catch (Exception e) {
-            System.err.println("Gambar map tidak ketemu, pastikan path benar!");
+            // Fallback jika gambar belum ada, pakai warna solid
+            Pixmap p = new Pixmap(1,1, Pixmap.Format.RGBA8888);
+            p.setColor(Color.DARK_GRAY); p.fill();
+            mapTexture = new Texture(p);
         }
 
-        // 2. Bikin Texture Titik Merah (Node) secara coding (biar gak perlu cari aset lagi)
-        createNodeTexture();
+        // Generate Texture Node Secara Coding (Biar gak perlu aset png dulu)
+        battleNodeTex = createNodeTexture(Color.RED);   // Merah = Berantem
+        storyNodeTex = createNodeTexture(Color.GOLD);   // Emas = Cerita Utama
+        shopNodeTex = createNodeTexture(Color.CYAN);    // Biru = Toko
 
         setupUI();
     }
 
-    private void createNodeTexture() {
-        // Membuat lingkaran merah kecil ukuran 32x32
-        Pixmap pixmap = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
-        pixmap.setColor(Color.RED);
-        pixmap.fillCircle(16, 16, 16);
-        nodeTexture = new Texture(pixmap);
+    // Helper membuat lingkaran warna
+    private Texture createNodeTexture(Color color) {
+        Pixmap pixmap = new Pixmap(40, 40, Pixmap.Format.RGBA8888);
+        pixmap.setColor(color);
+        pixmap.fillCircle(20, 20, 20);
+        // Tambah border putih biar jelas
+        pixmap.setColor(Color.WHITE);
+        pixmap.drawCircle(20, 20, 20);
+        Texture t = new Texture(pixmap);
         pixmap.dispose();
+        return t;
     }
 
     private void setupUI() {
-        // A. Pasang Background Peta
-        if (mapTexture != null) {
-            Image bgImage = new Image(mapTexture);
-            bgImage.setFillParent(true); // Peta memenuhi layar
-            stage.addActor(bgImage);
-        }
+        // 1. Background Peta
+        Image bgImage = new Image(mapTexture);
+        bgImage.setFillParent(true);
+        stage.addActor(bgImage);
 
-        // B. Pasang Node-Node (Lokasi)
+        Skin skin = ResourceManager.getInstance().getSkin();
 
-        // NODE 1: HUTAN (Battle)
-        // Koordinat misal: x=200, y=300
-        addNode(200, 300, "Hutan Terlarang", () -> {
-            // Aksi: Masuk ke Battle Screen
-            // Parameter terakhir adalah logic: "Kalau menang, balik ke layar peta INI lagi"
-            game.setScreen(new BattleScreen(
-                "Background/bg_forest.png",
-                EnemyType.SKELETON,
-                () -> game.setScreen(WorldMapScreen.this) // CALLBACK: Balik sini lagi
-            ));
+        // --- TAMBAHAN TOMBOL STATUS (POJOK KIRI ATAS) ---
+        TextButton statusBtn = new TextButton("STATUS", skin);
+
+        // Posisi: x=20, y=TinggiLayar - TinggiTombol - Margin
+        statusBtn.setPosition(20, Gdx.graphics.getHeight() - 60);
+        statusBtn.setSize(100, 40);
+
+        statusBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Pindah ke Status Screen
+                game.setScreen(new StatusScreen(game));
+            }
         });
 
-        // NODE 2: ISTANA (Narrative)
-        addNode(600, 400, "Istana Raja", () -> {
-            // Aksi: Masuk ke Cerita
-            // NarrativeScreen juga harus diedit nanti kalau mau balik ke Map otomatis
+        stage.addActor(statusBtn);
+
+        // ==========================================
+        // KONFIGURASI NODE-NODE DI PETA
+        // ==========================================
+
+        // --- 1. NODE MAIN STORY (Istana) ---
+        addNode(NodeType.MAIN_STORY, 600, 400, "Royal Capital", skin, () -> {
+            // Logika: Masuk ke NarrativeScreen
+            // Nanti NarrativeScreen perlu dimodifikasi agar bisa load "Chapter" tertentu
             game.setScreen(new NarrativeScreen(game));
         });
 
-        // NODE 3: GUNUNG BERAPI (Battle Boss)
-        addNode(800, 600, "Gunung Bahamut", () -> {
-            game.setScreen(new BattleScreen(
-                "Background/Lava.png", // Asumsi ada gambar ini
-                EnemyType.DRAGON_BOSS,
-                () -> game.setScreen(WorldMapScreen.this)
+        // --- 2. NODE RANDOM BATTLE (Hutan Grinding) ---
+        addNode(NodeType.RANDOM_BATTLE, 250, 300, "Dark Forest", skin, () -> {
+            // Logika: Random Enemy (50% Skeleton, 50% Slime)
+            EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.SKELETON : EnemyType.SLIME;
+
+            game.setScreen(new BattleScreen(game,
+                "Background/bg_forest.png",
+                randomEnemy,
+                () -> game.setScreen(new WorldMapScreen(game)) // Callback: Balik ke Map setelah menang
             ));
+        });
+
+        // --- 3. NODE RANDOM BATTLE (Gunung Berapi - Hard) ---
+        addNode(NodeType.RANDOM_BATTLE, 800, 600, "Mt. Doom", skin, () -> {
+            // Logika: Lawan Boss atau Musuh Kuat
+            game.setScreen(new BattleScreen(game,
+                "Background/Lava.png",
+                EnemyType.DRAGON_BOSS,
+                () -> game.setScreen(new WorldMapScreen(game))
+            ));
+        });
+
+        // --- 4. NODE SHOP (Desa Pedagang) ---
+        addNode(NodeType.SHOP, 450, 200, "Merchant Village", skin, () -> {
+            System.out.println("Masuk ke Shop Screen...");
+            // game.setScreen(new ShopScreen(game)); // Nanti dibuat
         });
     }
 
-    // Method helper untuk membuat Tombol Node
-    private void addNode(float x, float y, String locationName, Runnable onClickAction) {
-        TextureRegionDrawable drawable = new TextureRegionDrawable(nodeTexture);
-        ImageButton nodeBtn = new ImageButton(drawable);
+    private void addNode(NodeType type, float x, float y, String name, Skin skin, Runnable action) {
+        // Pilih Texture berdasarkan Tipe
+        TextureRegionDrawable drawable = null;
+        switch (type) {
+            case MAIN_STORY: drawable = new TextureRegionDrawable(storyNodeTex); break;
+            case RANDOM_BATTLE: drawable = new TextureRegionDrawable(battleNodeTex); break;
+            case SHOP: drawable = new TextureRegionDrawable(shopNodeTex); break;
+        }
 
+        // Buat Tombol Node
+        ImageButton nodeBtn = new ImageButton(drawable);
         nodeBtn.setPosition(x, y);
 
-        // Listener saat node diklik
+        // Tambahkan Label Nama Tempat di bawah Node
+        Label nameLabel = new Label(name, skin);
+        nameLabel.setFontScale(0.8f);
+        // Posisikan label di tengah bawah tombol
+        nameLabel.setPosition(x + (nodeBtn.getWidth() - nameLabel.getWidth()) / 2, y - 20);
+
+        // Listener Klik
         nodeBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Pergi ke: " + locationName);
-                // Jalankan aksi pindah layar
-                onClickAction.run();
+                action.run();
             }
         });
 
         stage.addActor(nodeBtn);
+        stage.addActor(nameLabel);
     }
 
     @Override
@@ -116,13 +172,16 @@ public class WorldMapScreen implements Screen {
         stage.draw();
     }
 
-    @Override public void dispose() {
+    @Override
+    public void dispose() {
         stage.dispose();
-        if(mapTexture!=null) mapTexture.dispose();
-        if(nodeTexture!=null) nodeTexture.dispose();
+        if(mapTexture != null) mapTexture.dispose();
+        battleNodeTex.dispose();
+        storyNodeTex.dispose();
+        shopNodeTex.dispose();
     }
 
-    // Boilerplate
+    // Boilerplate standard
     @Override public void show() {}
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}

@@ -273,7 +273,7 @@ public class NarrativeScreen implements Screen {
 
         // Pindah ke BattleScreen dengan membawa Callback tadi
         // Pastikan BattleScreen Anda sudah punya constructor (String bg, EnemyType type, Runnable onVictory)
-        game.setScreen(new BattleScreen(step.battleBackground, step.battleEnemy, onVictory));
+        game.setScreen(new BattleScreen(game, step.battleBackground, step.battleEnemy, onVictory));
     }
 
     private void updateSceneData() {

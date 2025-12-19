@@ -15,9 +15,10 @@ public class GameServices {
     public PlayerData loadOrCreatePlayer(String userId) {
         return playerRepository.findById(userId)
                 .orElseGet(() -> {
-                    // Logic pembuatan karakter awal dipindah ke sini
-                    // Nanti bisa ditambah logic: Cek apakah user sudah daftar akun, dll.
-                    PlayerData newData = new PlayerData(userId, "Artoria", 1000, 50);
+                    // Logic Buat Baru yang lebih simpel karena Constructor sudah handle default value
+                    PlayerData newData = new PlayerData(userId, "Artoria");
+
+                    // Save ke DB
                     return playerRepository.save(newData);
                 });
     }

@@ -1,5 +1,6 @@
 package com.FEA_3.frontend.Core;
 
+import com.FEA_3.frontend.Main;
 import com.FEA_3.frontend.Patterns.Command.DefendCommand;
 import com.FEA_3.frontend.Utils.NetworkManager;
 import com.FEA_3.frontend.Entity.UnitStats;
@@ -38,13 +39,15 @@ public class BattleScreen implements Screen {
     private Music bgm;
     private float uiPanelHeight;
     private Runnable onVictoryAction;
+    private Main game;
 
     // --- TAMBAHAN UNTUK LOADING STATE ---
     private boolean isLoading = true; // Status: Apakah sedang ambil data?
     private Label loadingLabel;       // Tulisan "Connecting..."
 
-    public BattleScreen(String bgPath, EnemyType enemyType, Runnable onVictory) {
+    public BattleScreen(Main game, String bgPath, EnemyType enemyType, Runnable onVictory) {
         batch = new SpriteBatch();
+        this.game = game;
         ResourceManager.getInstance().loadAssets();
         bgm = ResourceManager.getInstance().getMusic("Audio/Music/Battle_Music.wav");
         this.onVictoryAction = onVictory;
@@ -87,7 +90,7 @@ public class BattleScreen implements Screen {
                 // Inisialisasi Hero dengan data dari Server
                 // ASUMSI: Anda sudah refactor GameUnit menerima UnitStats.
                 // Jika belum, pakai: new GameUnit(stats.getName(), stats.getMaxHp(), stats.getAttackPower());
-                hero = new GameUnit(stats);
+                hero = new GameUnit(game.playerStats);
 
                 // Lanjut inisialisasi musuh & UI
                 initGameLogic();
@@ -103,7 +106,7 @@ public class BattleScreen implements Screen {
                 System.out.println("Gagal konek: " + t.getMessage());
 
                 // Fallback: Pakai data offline biar game gak crash
-                UnitStats offlineStats = new UnitStats("Offline Hero", 500, 10);
+                UnitStats offlineStats = new UnitStats("Artoria", 1000, 200, 50, 20, 10);
                 hero = new GameUnit(offlineStats);
 
                 initGameLogic();
@@ -124,6 +127,7 @@ public class BattleScreen implements Screen {
 
         // 2. Berikan ke Player
         hero.getStats().addExp(expGained);
+        hero.getStats().setCrystalReward(crystalGained);
         hero.getStats().addManaCrystals(crystalGained);
 
         // TODO: Panggil NetworkManager.savePlayer(...) disini nanti agar tersimpan ke Database
@@ -191,18 +195,28 @@ public class BattleScreen implements Screen {
         heroY = unitBaseY;
         enemyY = unitBaseY;
 
-        if (hero != null) { // Cek null safety
+        // --- SETUP HP BAR HERO ---
+        if (hero != null) {
             HealthBar heroBar = new HealthBar(150, 20);
-            // Taruh 160 pixel di atas posisi kaki karakter
             heroBar.setPosition(heroX, heroY + 160);
             hero.addObserver(heroBar);
+
+            // --- SOLUSI: PAKSA UPDATE VISUAL AWAL ---
+            // Ambil data dari stats hero yang sekarang (990/1000) dan berikan ke Bar
+            heroBar.init(hero.getStats().getCurrentHp(), hero.getStats().getMaxHp());
+
             stage.addActor(heroBar);
         }
 
+        // --- SETUP HP BAR ENEMY ---
         if (enemy != null) {
             HealthBar enemyBar = new HealthBar(150, 20);
             enemyBar.setPosition(enemyX, enemyY + 160);
             enemy.addObserver(enemyBar);
+
+            // Enemy juga di-init biar aman
+            enemyBar.init(enemy.getStats().getCurrentHp(), enemy.getStats().getMaxHp());
+
             stage.addActor(enemyBar);
         }
 

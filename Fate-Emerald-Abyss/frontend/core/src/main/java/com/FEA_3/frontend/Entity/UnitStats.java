@@ -1,78 +1,198 @@
 package com.FEA_3.frontend.Entity;
 
-// Ini adalah komponen data mentah Unit
 public class UnitStats {
     private String name;
-    private int maxHp;
-    private int attackPower;
 
-    // Data Dinamis
-    private int currentHp;
+    // --- BASIC STATS ---
     private int level;
-    // Data Milik Player
+    private int maxHp;
+    private int currentHp;
+    private int maxMp;      // NEW
+    private int currentMp;  // NEW
+
+    // --- COMBAT STATS ---
+    private int attackPower;
+    private int defense;    // NEW
+    private int speed;      // NEW (0-100)
+
+    // --- PROBABILITY STATS ---
+    private float critChance; // 0.0 - 100.0
+    private float critDamage; // 100.0 - 200.0 (Multiplier)
+    private float accuracy;   // 0 - 100
+
+    // --- PROGRESSION ---
     private int currentExp;
     private int maxExp;
-    private int manaCrystals; // Currency
+    private int manaCrystals;
 
-    // Data Milik Musuh (Reward jika dikalahkan)
+    // --- REWARDS ---
     private int expReward;
     private int crystalReward;
-    // ... data lain seperti EXP, Defense, dll.
 
-    public UnitStats(String name, int maxHp, int attackPower) {
+    public UnitStats(String name, int hp, int mp, int atk, int def, int spd) {
         this.name = name;
-        this.maxHp = maxHp;
-        this.attackPower = attackPower;
-        this.currentHp = maxHp; // Default: HP penuh saat dibuat
-        this.level = 1;
-        this.currentExp = 0;
-        this.maxExp = 100;
         this.level = 1;
         this.manaCrystals = 0;
+
+        this.maxHp = hp;
+        this.currentHp = hp;
+        this.maxMp = mp;
+        this.currentMp = mp;
+
+        this.attackPower = atk;
+        this.defense = def;
+        this.speed = spd; // Base speed
+
+        // Default Stats (Bisa di-set manual nanti)
+        this.critChance = 5.0f;    // 5% Base
+        this.critDamage = 150.0f;  // 150% Base Damage
+        this.accuracy = 95.0f;     // 95% Base Hit rate
+
+        this.currentExp = 0;
+        this.maxExp = 100;
     }
 
-    // --- Getter & Setter ---
-    // (Gunakan Getter/Setter untuk semua field)
-
-    public String getName() {
-        return name;
-    }
-
-    public int getAttackPower() {
-        return attackPower;
-    }
-
-    public int getCurrentHp() {
-        return currentHp;
-    }
-
-    public int getMaxHp() {
-        return maxHp;
-    }
-
-    public void setCurrentHp(int currentHp) {
-        this.currentHp = currentHp;
-    }
-
-    public int getExpReward() { return expReward; }
-    public void setExpReward(int expReward) { this.expReward = expReward; }
-
-    public int getCrystalReward() { return crystalReward; }
-    public void setCrystalReward(int crystalReward) { this.crystalReward = crystalReward; }
-
-    public int getManaCrystals() { return manaCrystals; }
-    public void addManaCrystals(int amount) { this.manaCrystals += amount; }
-
+    // --- LOGIC LEVEL UP & SCALING ---
     public void addExp(int amount) {
+        if (this.level >= 20) return; // MAX LEVEL 20
+
         this.currentExp += amount;
-        // Logic Level Up sederhana
-        if (this.currentExp >= maxExp) {
-            this.level++;
-            this.currentExp -= maxExp;
-            this.maxExp *= 1.5; // Butuh exp lebih banyak untuk level selanjutnya
-            System.out.println("LEVEL UP! Now Level " + level);
-            // Nanti bisa tambah stat HP/Attack disini
+        while (this.currentExp >= maxExp && this.level < 20) {
+            levelUp();
         }
     }
-    // ...
+
+    private void levelUp() {
+        this.level++;
+        this.currentExp -= this.maxExp;
+        this.maxExp = (int) (this.maxExp * 1.5); // Exp curve
+
+        // --- SCALING STATUS (STATUS++) ---
+        // Sesuai request: Level 1-3, 4-8, 10-13, 15-18 naik status
+        // Kita simplifikasi: Setiap naik level, status naik fix
+        this.maxHp += 50;
+        this.maxMp += 10;
+        this.attackPower += 5;
+        this.defense += 3;
+
+        // Speed scaling (Max 100)
+        if (this.speed < 100) this.speed += 2;
+
+        // Pulihkan HP/MP saat level up
+        this.currentHp = this.maxHp;
+        this.currentMp = this.maxMp;
+
+        System.out.println(name + " LEVEL UP! Now Level " + level);
+    }
+
+    // --- MANA SYSTEM ---
+    public boolean consumeMana(int amount) {
+        if (currentMp >= amount) {
+            currentMp -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    // --- GETTERS & SETTERS (Generate All) ---
+    public int getLevel() { return level; }
+    public int getCurrentHp() { return currentHp; }
+    public void setCurrentHp(int hp) { this.currentHp = hp; }
+    public int getMaxHp() { return maxHp; }
+    public int getAttackPower() { return attackPower; }
+    public int getDefense() { return defense; }
+    public int getSpeed() { return speed; }
+    public float getCritChance() { return critChance; }
+    public float getCritDamage() { return critDamage; }
+    public float getAccuracy() { return accuracy; }
+
+    // Setter Reward
+    public void setExpReward(int exp) { this.expReward = exp; }
+    public int getExpReward() { return expReward; }
+    public void setCrystalReward(int c) { this.crystalReward = c; }
+    public int getCrystalReward() { return crystalReward; }
+    public String getName() { return name; }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void setMaxHp(int maxHp) {
+        this.maxHp = maxHp;
+    }
+
+    public int getMaxMp() {
+        return maxMp;
+    }
+
+    public void setMaxMp(int maxMp) {
+        this.maxMp = maxMp;
+    }
+
+    public int getCurrentMp() {
+        return currentMp;
+    }
+
+    public void setCurrentMp(int currentMp) {
+        this.currentMp = currentMp;
+    }
+
+    public void setAttackPower(int attackPower) {
+        this.attackPower = attackPower;
+    }
+
+    public void setDefense(int defense) {
+        this.defense = defense;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public void setCritChance(float critChance) {
+        this.critChance = critChance;
+    }
+
+    public void setCritDamage(float critDamage) {
+        this.critDamage = critDamage;
+    }
+
+    public void setAccuracy(float accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public int getCurrentExp() {
+        return currentExp;
+    }
+
+    public void setCurrentExp(int currentExp) {
+        this.currentExp = currentExp;
+    }
+
+    public int getMaxExp() {
+        return maxExp;
+    }
+
+    public void setMaxExp(int maxExp) {
+        this.maxExp = maxExp;
+    }
+    // 1. Getter (Untuk ambil jumlah uang)
+    public int getManaCrystals() {
+        return manaCrystals;
+    }
+
+    // 2. Setter (Untuk NetworkManager mengisi uang dari Database)
+    public void setManaCrystals(int amount) {
+        this.manaCrystals = amount;
+    }
+
+    // 3. Helper (Untuk menambah uang saat menang battle)
+    public void addManaCrystals(int amount) {
+        this.manaCrystals += amount;
+    }
+    // ... Buat setter lain jika perlu
 }

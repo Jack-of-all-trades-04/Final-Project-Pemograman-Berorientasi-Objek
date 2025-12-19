@@ -41,16 +41,25 @@ public class NetworkManager {
 
                 // Parsing JSON dari Springboot ke Object Java
                 try {
-                    // JSON format: {"characterName":"Artoria", "maxHp":1000 ...}
-                    // Kita parsing manual atau mapping ke UnitStats
+                    // ... try block ...
                     JsonValue root = new JsonReader().parse(result);
 
                     String name = root.getString("characterName");
-                    int hp = root.getInt("maxHp");
-                    int atk = root.getInt("attackPower");
 
-                    // Buat UnitStats dari data server
-                    UnitStats stats = new UnitStats(name, hp, atk);
+                    // Ambil data lengkap
+                    int hp = root.getInt("maxHp");
+                    int mp = root.getInt("maxMp", 200); // Default 200 kalau null
+                    int atk = root.getInt("attackPower");
+                    int def = root.getInt("defense", 20);
+                    int spd = root.getInt("speed", 10);
+
+                    // Buat UnitStats dengan Constructor BARU yang lengkap
+                    UnitStats stats = new UnitStats(name, hp, mp, atk, def, spd);
+
+                    // Load progress tambahan (Level, Exp, dll)
+                    // Kita perlu buat method setter khusus di UnitStats untuk load ini
+                    stats.setLevel(root.getInt("level", 1)); // Anda perlu buat setter ini di UnitStats
+                    stats.setManaCrystals(root.getInt("manaCrystals", 0)); // Perlu setter ini juga
 
                     // Panggil callback ke Main Thread (PENTING: LibGDX UI harus di main thread)
                     Gdx.app.postRunnable(() -> callback.onSuccess(stats));
