@@ -37,6 +37,7 @@ public class ResourceManager {
 
         assetManager.load("Background/Temps.png", Texture.class);
         assetManager.load("Background/MainMenu.png", Texture.class);
+        assetManager.load("Background/WorldMap.png", Texture.class);
 
         assetManager.finishLoading(); // Tunggu sampai semua selesai dimuat
     }

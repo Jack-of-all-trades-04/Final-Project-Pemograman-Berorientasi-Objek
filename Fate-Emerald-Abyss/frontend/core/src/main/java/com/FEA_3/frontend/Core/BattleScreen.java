@@ -37,16 +37,17 @@ public class BattleScreen implements Screen {
     private Texture backgroundTexture;
     private Music bgm;
     private float uiPanelHeight;
+    private Runnable onVictoryAction;
 
     // --- TAMBAHAN UNTUK LOADING STATE ---
     private boolean isLoading = true; // Status: Apakah sedang ambil data?
     private Label loadingLabel;       // Tulisan "Connecting..."
 
-    public BattleScreen(String bgPath, EnemyType enemyType) {
+    public BattleScreen(String bgPath, EnemyType enemyType, Runnable onVictory) {
         batch = new SpriteBatch();
         ResourceManager.getInstance().loadAssets();
         bgm = ResourceManager.getInstance().getMusic("Audio/Music/Battle_Music.wav");
-
+        this.onVictoryAction = onVictory;
         // Setting agar musik mengulang (Looping)
         bgm.setLooping(true);
         bgm.setVolume(0.5f); // Volume 50%
@@ -128,17 +129,14 @@ public class BattleScreen implements Screen {
         // TODO: Panggil NetworkManager.savePlayer(...) disini nanti agar tersimpan ke Database
 
         // 3. Buat Jendela Dialog Pop-up
-        Dialog winDialog = new Dialog("VICTORY!", skin) {
+        Dialog winDialog = new Dialog("VICTORY!", ResourceManager.getInstance().getSkin()) {
             @Override
             protected void result(Object object) {
-                // Apa yang terjadi saat tombol diklik?
-                // Kembali ke Main Menu (atau NarrativeScreen)
-                // Karena kita belum punya 'Screen Manager' canggih, kita hardcode dulu:
-                // Gdx.app.exit(); // Keluar game (Jangan pakai ini nanti)
-
-                // Kembali ke Menu Utama
-                // (Anda butuh referensi ke 'game' main class, atau lakukan transisi manual)
-                // Contoh sementara: System.out.println("Kembali ke menu...");
+                // SAAT KLIK CONTINUE:
+                // Jalankan instruksi yang sudah disimpan tadi
+                if (onVictoryAction != null) {
+                    onVictoryAction.run();
+                }
             }
         };
 

@@ -33,6 +33,10 @@ public class NarrativeScreen implements Screen {
         String sfxPath = null;
         boolean triggerBattle = false; // Digunakan untuk menentukan kapan memulai battle
 
+        // FIELD BARU UNTUK BATTLE
+        EnemyType battleEnemy = null;
+        String battleBackground = null;
+
         public StoryStep(String text) {
             this.text = text;
         }
@@ -48,6 +52,11 @@ public class NarrativeScreen implements Screen {
         }
         public StoryStep setSoundEffect(String path) {
             this.sfxPath = path;
+            return this;
+        }
+        public StoryStep setBattle(EnemyType enemy, String bgPath) {
+            this.battleEnemy = enemy;
+            this.battleBackground = bgPath;
             return this;
         }
     }
@@ -139,7 +148,8 @@ public class NarrativeScreen implements Screen {
         line("Not long after that, the reality and time itself is coming back to normal."),
         line("MC: 'Alright. Then I shalt summon thee... COME!!!'"),
         line("After spelling such command, appear a tall girl with a big two-handed sword ready at her hand ready to fight back a suspicious guy, from the image I get, i think my servant is Saber-class servant."),
-        line("Saber: 'Hello there, let me handle this guy first'"),
+        line("Saber: 'Hello there, let me handle this guy first'")
+            .setBattle(EnemyType.SKELETON, "Background/TightAlley.jpeg"),
         line("Saber: 'Hey, you are Assassin right?"),
         line("Suspicious Guy: '...'"),
         line("Saber: 'Not answering anything... what a typical assassin'"),
@@ -161,12 +171,6 @@ public class NarrativeScreen implements Screen {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        // Ambil musik tapi JANGAN di-play di constructor
-        bgm = ResourceManager.getInstance().getMusic("Audio/Music/Battle_Music.wav");
-
-        // Setting agar musik mengulang (Looping)
-        bgm.setLooping(true);
-        bgm.setVolume(0.5f); // Volume 50%
 
         characterImg = ResourceManager.getInstance().getTexture("Entity/Player/MC.png");
         suspiciousGuy = ResourceManager.getInstance().getTexture("Entity/Enemy/suspiciousGuy.png");
@@ -220,15 +224,56 @@ public class NarrativeScreen implements Screen {
     }
 
     private void advanceStory() {
+        // Cek dulu, apakah step SEBELUMNYA (yang baru saja diklik) punya trigger battle?
+        // Kita cek index yang sekarang sebelum ditambah
+        StoryStep currentStep = script[scriptIndex];
+
+        if (currentStep.battleEnemy != null) {
+            // ADA BATTLE!
+            triggerBattle(currentStep);
+            // Jangan increment scriptIndex dulu, atau increment disini tergantung logika.
+            // Strategi terbaik: Masuk battle -> Menang -> Baru increment index.
+            return;
+        }
+
+        // Kalau tidak ada battle, lanjut text biasa
         scriptIndex++;
+
         if (scriptIndex >= script.length) {
-            // CERITA HABIS -> PINDAH KE BATTLE
-            game.setScreen(new BattleScreen("", EnemyType.SKELETON));
-            // Note: BattleScreen tidak butuh 'game' di constructor sebelumnya,
-            // tapi kalau mau balik ke menu nanti, BattleScreen perlu refactor dikit.
+            // CERITA HABIS -> PINDAH KE WORLD MAP
+            game.setScreen(new WorldMapScreen(game));
+
+            // Opsional: Dispose narrative screen agar hemat memori karena sudah tidak dipakai
+            // dispose();
         } else {
             updateSceneData();
         }
+    }
+
+    private void triggerBattle(StoryStep step) {
+        // Kita simpan instance NarrativeScreen ini ('this')
+        final NarrativeScreen narrativeInstance = this;
+
+        // Buat Callback: Apa yang terjadi setelah menang?
+        Runnable onVictory = new Runnable() {
+            @Override
+            public void run() {
+                // 1. Balikkan Layar ke Narrative Screen ini
+                game.setScreen(narrativeInstance);
+
+                // 2. Maju ke baris dialog berikutnya (biar gak ngulang battle)
+                scriptIndex++;
+                if (scriptIndex < script.length) {
+                    updateSceneData();
+                } else {
+                    game.setScreen(new WorldMapScreen(game));
+                }
+            }
+        };
+
+        // Pindah ke BattleScreen dengan membawa Callback tadi
+        // Pastikan BattleScreen Anda sudah punya constructor (String bg, EnemyType type, Runnable onVictory)
+        game.setScreen(new BattleScreen(step.battleBackground, step.battleEnemy, onVictory));
     }
 
     private void updateSceneData() {
@@ -319,17 +364,27 @@ public class NarrativeScreen implements Screen {
     }
 
     // Boilerplate standard
-    @Override public void show() {
-        if (bgm != null) bgm.play();
+    @Override
+    public void show() {
+        // PENTING: Kembalikan input processor ke stage ini
+        // Karena saat battle, input diambil oleh BattleScreen
+        Gdx.input.setInputProcessor(stage);
+
+        // Jika musik mati saat hide, nyalakan lagi jika perlu
+        if (currentSoundtrack != null && !currentSoundtrack.isPlaying()) {
+            currentSoundtrack.play();
+        }
+    }
+
+    @Override
+    public void hide() {
+        // Matikan musik saat pindah ke Battle agar tidak tabrakan dengan BGM Battle
+        if (currentSoundtrack != null) {
+            currentSoundtrack.pause(); // Gunakan pause, bukan stop, agar lanjut lagunya
+        }
     }
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}
     @Override public void resume() {}
-    @override
-    public void hide() {
-        if (currentSoundtrack != null) {
-            currentSoundtrack.stop();
-        }
-    }
     @Override public void dispose() { stage.dispose(); }
 }
