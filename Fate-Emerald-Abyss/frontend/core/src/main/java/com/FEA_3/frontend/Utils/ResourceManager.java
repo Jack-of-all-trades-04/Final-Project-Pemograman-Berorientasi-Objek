@@ -19,6 +19,15 @@ public class ResourceManager {
     }
 
     public void loadAssets() {
+        // --- LOAD AUDIO ---
+        // 1. Music (BGM)
+        assetManager.load("Audio/Music/Battle_Music.wav", Music.class);
+
+        // 2. Sounds (SFX)
+        assetManager.load("Audio/Sound_Effect/ui_click1.wav", Sound.class);
+        assetManager.load("Audio/Sound_Effect/ui_hover1.wav", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Attack1.wav", Sound.class);
+
         // Load Karakter
         assetManager.load("Entity/Player/Temp.png", Texture.class);
         assetManager.load("Entity/Enemy/Idle1.png", Texture.class);

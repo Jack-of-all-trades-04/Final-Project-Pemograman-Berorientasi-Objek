@@ -5,6 +5,7 @@ import com.FEA_3.frontend.Patterns.Factory.UIFactory;
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -160,6 +161,12 @@ public class NarrativeScreen implements Screen {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        // Ambil musik tapi JANGAN di-play di constructor
+        bgm = ResourceManager.getInstance().getMusic("Audio/Music/Battle_Music.wav");
+
+        // Setting agar musik mengulang (Looping)
+        bgm.setLooping(true);
+        bgm.setVolume(0.5f); // Volume 50%
 
         characterImg = ResourceManager.getInstance().getTexture("Entity/Player/MC.png");
         suspiciousGuy = ResourceManager.getInstance().getTexture("Entity/Enemy/suspiciousGuy.png");
@@ -216,7 +223,7 @@ public class NarrativeScreen implements Screen {
         scriptIndex++;
         if (scriptIndex >= script.length) {
             // CERITA HABIS -> PINDAH KE BATTLE
-            game.setScreen(new BattleScreen());
+            game.setScreen(new BattleScreen("", EnemyType.SKELETON));
             // Note: BattleScreen tidak butuh 'game' di constructor sebelumnya,
             // tapi kalau mau balik ke menu nanti, BattleScreen perlu refactor dikit.
         } else {
@@ -312,10 +319,13 @@ public class NarrativeScreen implements Screen {
     }
 
     // Boilerplate standard
-    @Override public void show() {}
+    @Override public void show() {
+        if (bgm != null) bgm.play();
+    }
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}
     @Override public void resume() {}
+    @override
     public void hide() {
         if (currentSoundtrack != null) {
             currentSoundtrack.stop();
