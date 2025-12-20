@@ -39,6 +39,11 @@ public class HealthBar extends Actor implements UnitObserver {
         this.maxHealth = maxHp;
     }
 
+    @Override
+    public void onDamageTaken(int amount, boolean isCrit) {
+
+    }
+
     // Method Helper untuk update manual saat inisialisasi
     public void init(int currentHp, int maxHp) {
         this.currentHealth = currentHp;

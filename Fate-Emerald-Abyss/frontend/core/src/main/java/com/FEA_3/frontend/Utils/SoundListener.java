@@ -26,7 +26,7 @@ public class SoundListener extends ClickListener {
     public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
         // Cek pointer == -1 agar sound hanya main saat mouse masuk, bukan saat drag
         if (pointer == -1 && hoverSound != null) {
-            hoverSound.play(0.8f);
+            hoverSound.play(0.4f);
         }
         super.enter(event, x, y, pointer, fromActor);
     }

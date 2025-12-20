@@ -1,6 +1,7 @@
 package com.FEA_3.frontend.Utils;
 
 import com.FEA_3.frontend.Entity.GameUnit;
+import com.FEA_3.frontend.Entity.EnemyType;
 import com.FEA_3.frontend.Entity.Skill;
 import com.badlogic.gdx.audio.Sound;
 
@@ -138,5 +139,96 @@ public class SkillDatabase {
 
         // Update status unlock setelah semua ditambahkan
         hero.checkUnlockSkills();
+    }
+
+    public static void loadEnemySkills(GameUnit enemy, EnemyType type) {
+        switch (type) {
+            case ASSASSIN: // Skill: Execution Mark
+                enemy.addSkill(new Skill("Execution Mark", "Mark target for death.", "Icons/Mark.png", 0, 20, Skill.SkillType.ACTIVE, (user, target) -> {
+                    System.out.println("Assassin used Execution Mark!");
+                    target.setDefenseBuff(-2); // Debuff Def (Logic sederhana)
+                }));
+                break;
+
+            case LANCER: // Skill: Impale Drive (ATK x 1.2)
+                enemy.addSkill(new Skill("Impale Drive", "Piercing attack.", "Icons/Spear.png", 0, 30, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int dmg = (int) (user.getStats().getAttackPower() * 1.2);
+                    target.takeDamage(dmg, false);
+                }));
+                break;
+
+            case ANOMIMUS: // Skill: Through (ATK x 1.2, Ignore 30% Def)
+                enemy.addSkill(new Skill("Through", "Piercing damage.", "Icons/Pierce.png", 0, 10, Skill.SkillType.ACTIVE, (user, target) -> {
+                    // Simulasi ignore def di logic damage nanti
+                    int dmg = (int) (user.getStats().getAttackPower() * 1.2);
+                    target.takeDamage(dmg, false);
+                }));
+                break;
+
+            case BEELING: // Skill: Sting (ATK x 1.1 + Poison/Bleed)
+                enemy.addSkill(new Skill("Sting", "Poisonous attack.", "Icons/Sting.png", 0, 5, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int dmg = (int) (user.getStats().getAttackPower() * 1.1);
+                    target.takeDamage(dmg, false);
+                    target.setBleed(3); // Anggap Poison = Bleed di sistem kita
+                }));
+                break;
+
+            case SLIME: // Skill: Gulp (Heal 15% Max HP)
+                enemy.addSkill(new Skill("Gulp", "Heals self.", "Icons/Potion.png", 0, 10, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int heal = (int) (user.getStats().getMaxHp() * 0.15);
+                    int newHp = user.getStats().getCurrentHp() + heal;
+                    if(newHp > user.getStats().getMaxHp()) newHp = user.getStats().getMaxHp();
+                    user.getStats().setCurrentHp(newHp);
+                    System.out.println("Slime used Gulp!");
+                }));
+                break;
+
+            case GOLEM: // Skill: Shockwave (Stun 1 Turn)
+                enemy.addSkill(new Skill("Shockwave", "Stuns enemy.", "Icons/Stun.png", 0, 20, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int dmg = user.getStats().getAttackPower();
+                    target.takeDamage(dmg, false);
+                    target.setStunned(true);
+                }));
+                break;
+
+            case RIDER: // Skill: Trample Rush (ATK x 1.1 + Stun Chance?)
+                enemy.addSkill(new Skill("Trample Rush", "Charge attack.", "Icons/Charge.png", 0, 15, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int dmg = (int) (user.getStats().getAttackPower() * 1.1);
+                    target.takeDamage(dmg, false);
+                    // 30% Chance Stun
+                    if (Math.random() < 0.3) {
+                        target.setStunned(true);
+                        System.out.println("Rider stunned the target!");
+                    }
+                }));
+                break;
+
+            case PRETENDER: // Skill: False Command (Debuff Accuracy / Confusion)
+                enemy.addSkill(new Skill("False Command", "Lowers accuracy.", "Icons/Debuff.png", 0, 25, Skill.SkillType.ACTIVE, (user, target) -> {
+                    target.setAccuracyDebuff(3); // -25% Acc selama 3 turn
+                    System.out.println("Pretender used False Command!");
+                }));
+                break;
+
+            case FARHAT: // Boss Forest: Storms Arrow (ATK x 1.3 + Slow)
+                enemy.addSkill(new Skill("Storms Arrow", "High Dmg + Slow.", "Icons/Arrow.png", 0, 40, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int dmg = (int) (user.getStats().getAttackPower() * 1.3);
+                    target.takeDamage(dmg, false);
+                    target.setSlowDebuff(3); // Slow Player
+                }));
+                break;
+
+            case MANDA: // Boss Ruins: Barbaric Slash (ATK x 1.5 + Bleed)
+                enemy.addSkill(new Skill("Barbaric Slash", "Massive Dmg + Bleed.", "Icons/Slash.png", 0, 50, Skill.SkillType.ACTIVE, (user, target) -> {
+                    int dmg = (int) (user.getStats().getAttackPower() * 1.5);
+                    target.takeDamage(dmg, true); // Force Critical (Sakit banget!)
+                    target.setBleed(3);
+                }));
+                break;
+        }
+
+        // Musuh tidak perlu checkUnlockSkills() karena levelnya fix,
+        // tapi kita panggil saja biar aktif di list skills
+        enemy.checkUnlockSkills();
     }
 }

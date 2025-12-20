@@ -2,6 +2,7 @@ package com.FEA_3.frontend;
 
 import com.FEA_3.frontend.Core.MainMenuScreen;
 import com.FEA_3.frontend.Entity.UnitStats;
+import com.FEA_3.frontend.Utils.UnitDatabase;
 import com.badlogic.gdx.Game;
 
 public class Main extends Game {
@@ -9,7 +10,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-        playerStats = new UnitStats("Artoria", 1000, 200, 50, 20, 10);
+        playerStats = UnitDatabase.createPlayerStats(1);
         // Mulai dari Main Menu
         this.setScreen(new MainMenuScreen(this));
     }

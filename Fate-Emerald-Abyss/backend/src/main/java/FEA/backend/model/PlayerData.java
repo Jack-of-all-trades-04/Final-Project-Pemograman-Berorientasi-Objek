@@ -47,24 +47,26 @@ public class PlayerData {
         this.id = id;
         this.characterName = characterName;
 
-        // Default Level 1 Stats (Samakan dengan UnitStats di Frontend)
+        // --- LEVEL 1 STATS (Sesuai Spreadsheet) ---
         this.level = 1;
         this.currentExp = 0;
         this.maxExp = 100;
-        this.manaCrystals = 500; // Testing
+        this.manaCrystals = 0;
 
-        this.maxHp = 1000;
-        this.currentHp = 1000;
-        this.maxMp = 200;
-        this.currentMp = 200;
+        // Stats Dasar
+        this.maxHp = 98;    // Rumus: 80 + 18*1
+        this.currentHp = 98;
+        this.maxMp = 148;   // Rumus: 120 + 28*1
+        this.currentMp = 148;
 
-        this.attackPower = 50;
-        this.defense = 20;
-        this.speed = 10;
+        this.attackPower = 31; // Rumus: 25 + 6*1
+        this.defense = 12;     // Rumus: 10 + 2.5*1
+        this.speed = 12;       // Rumus: 12 + 0.8*1
 
-        this.critChance = 5.0f;
-        this.critDamage = 150.0f;
-        this.accuracy = 95.0f;
+        // Stats Probabilitas (Float)
+        this.critChance = 5.5f;   // 5 + 0.5*1
+        this.critDamage = 151.0f; // 150 + 1*1
+        this.accuracy = 90.5f;    // 90 + 0.5*1
     }
 
     // --- GETTERS & SETTERS (Generate All via IDE: Alt+Insert) ---

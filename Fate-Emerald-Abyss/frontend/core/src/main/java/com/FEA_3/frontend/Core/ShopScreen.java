@@ -4,6 +4,7 @@ import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Main;
 import com.FEA_3.frontend.Utils.NetworkManager;
 import com.FEA_3.frontend.Utils.ResourceManager;
+import com.FEA_3.frontend.Utils.SoundListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -42,9 +43,9 @@ public class ShopScreen implements Screen {
     }
 
     private ShopItem[] shopItems = {
-        new ShopItem("Health Potion", 50, "Pulihkan 50 HP", "Icons/potion_hp.png"),
-        new ShopItem("Mana Potion", 80, "Pulihkan 30 MP", "Icons/potion_mp.png"),
-        new ShopItem("Iron Elixir", 65, "3-Turn 30% DEF", "Icons/potion_def.png")
+        new ShopItem("Health Potion", 50, "Pulihkan 50 HP", "Consumable/HP Potion.png"),
+        new ShopItem("Mana Potion", 80, "Pulihkan 30 MP", "Consumable/MP Potion.png"),
+        new ShopItem("Iron Elixir", 65, "3-Turn 30% DEF", "Consumable/Iron Elixir.png")
     };
 
     public ShopScreen(Main game) {
@@ -125,6 +126,7 @@ public class ShopScreen implements Screen {
                 System.out.println("Kembali ke Map");
             }
         });
+        backBtn.addListener(new SoundListener());
         root.add(backBtn).padTop(20);
 
         stage.addActor(root);
@@ -178,6 +180,7 @@ public class ShopScreen implements Screen {
                 }
             }
         });
+        minusBtn.addListener(new SoundListener());
 
         // Logic UI Plus
         plusBtn.addListener(new ClickListener() {
@@ -190,6 +193,7 @@ public class ShopScreen implements Screen {
                 }
             }
         });
+        plusBtn.addListener(new SoundListener());
 
         // --- LOGIC BELI MENGGUNAKAN NETWORK MANAGER YANG DILAMPIRKAN ---
         buyBtn.addListener(new ClickListener() {
@@ -240,6 +244,7 @@ public class ShopScreen implements Screen {
                 }
             }
         });
+        buyBtn.addListener(new SoundListener());
 
         actionTable.add(minusBtn).width(30);
         actionTable.add(qtyLabel).width(40);

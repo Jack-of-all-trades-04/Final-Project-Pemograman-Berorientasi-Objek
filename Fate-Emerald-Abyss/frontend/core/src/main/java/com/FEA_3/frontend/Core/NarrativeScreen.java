@@ -1,5 +1,6 @@
 package com.FEA_3.frontend.Core;
 
+import com.FEA_3.frontend.Entity.EnemyType;
 import com.FEA_3.frontend.Main;
 import com.FEA_3.frontend.Patterns.Factory.UIFactory;
 import com.FEA_3.frontend.Utils.ResourceManager;
@@ -7,7 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -149,7 +149,7 @@ public class NarrativeScreen implements Screen {
         line("MC: 'Alright. Then I shalt summon thee... COME!!!'"),
         line("After spelling such command, appear a tall girl with a big two-handed sword ready at her hand ready to fight back a suspicious guy, from the image I get, i think my servant is Saber-class servant."),
         line("Saber: 'Hello there, let me handle this guy first'")
-            .setBattle(EnemyType.SKELETON, "Background/TightAlley.jpeg"),
+            .setBattle(EnemyType.ASSASSIN, "Background/TightAlley.jpeg"),
         line("Saber: 'Hey, you are Assassin right?"),
         line("Suspicious Guy: '...'"),
         line("Saber: 'Not answering anything... what a typical assassin'"),
