@@ -47,9 +47,20 @@ public class ResourceManager {
         // Load UI Skin (PENTING untuk tombol)
         assetManager.load("Utility/uiskin.json", Skin.class);
 
+        // Load Consumable
+        assetManager.load("Consumable/HP Potion.png", Texture.class);
+        assetManager.load("Consumable/MP Potion.png", Texture.class);
+        assetManager.load("Consumable/Iron Elixir.png", Texture.class);
+
+
+        // Load Background
         assetManager.load("Background/Temps.png", Texture.class);
         assetManager.load("Background/MainMenu.png", Texture.class);
         assetManager.load("Background/WorldMap.png", Texture.class);
+        assetManager.load("Background/Aliz Ruins.png", Texture.class);
+        assetManager.load("Background/Bobota Forest.png", Texture.class);
+        assetManager.load("Background/Kalimba Forest.png", Texture.class);
+        assetManager.load("Background/Kazak Ruins.png", Texture.class);
 
         assetManager.finishLoading(); // Tunggu sampai semua selesai dimuat
     }

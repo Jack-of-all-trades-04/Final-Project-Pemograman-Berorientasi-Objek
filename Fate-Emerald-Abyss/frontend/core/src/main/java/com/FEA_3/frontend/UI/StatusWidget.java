@@ -67,6 +67,11 @@ public class StatusWidget extends Table implements UnitObserver {
         }
     }
 
+    @Override
+    public void onDamageTaken(int amount, boolean isCrit) {
+
+    }
+
     // Dipanggil manual (MP)
     public void updateMp(int currentMp, int maxMp) {
         if (isMp) {

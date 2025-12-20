@@ -1,10 +1,11 @@
 package com.FEA_3.frontend.Core;
 
+import com.FEA_3.frontend.Entity.EnemyType;
 import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Main;
-import com.FEA_3.frontend.Patterns.Factory.UnitFactory;
 import com.FEA_3.frontend.Utils.NetworkManager;
 import com.FEA_3.frontend.Utils.ResourceManager;
+import com.FEA_3.frontend.Utils.SoundListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -18,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import java.util.Random;
 
 public class WorldMapScreen implements Screen {
     private Main game;
@@ -95,6 +95,7 @@ public class WorldMapScreen implements Screen {
                 game.setScreen(new StatusScreen(game));
             }
         });
+        statusBtn.addListener(new SoundListener());
         stage.addActor(statusBtn);
 
         // 2. TOMBOL SKILLS (Sebelah Status)
@@ -107,6 +108,7 @@ public class WorldMapScreen implements Screen {
                 game.setScreen(new SkillScreen(game));
             }
         });
+        skillBtn.addListener(new SoundListener());
         stage.addActor(skillBtn);
 
         // 3. TOMBOL MAIN MENU (Kanan Atas)
@@ -119,9 +121,11 @@ public class WorldMapScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 // Konfirmasi keluar? Atau langsung aja
                 // Jangan lupa save otomatis kalau mau, atau peringatkan user
+                bgm.stop();
                 game.setScreen(new MainMenuScreen(game));
             }
         });
+        menuBtn.addListener(new SoundListener());
         stage.addActor(menuBtn);
 
         // Posisi: x=20, y=TinggiLayar - TinggiTombol - Margin
@@ -149,33 +153,102 @@ public class WorldMapScreen implements Screen {
             game.setScreen(new NarrativeScreen(game));
         });
 
-        // --- 2. NODE RANDOM BATTLE (Hutan Grinding) ---
-        addNode(NodeType.RANDOM_BATTLE, 250, 300, "Dark Forest", skin, () -> {
+        // --- 2. NODE RANDOM BATTLE (Hutan&Ruins Grinding) ---
+        addNode(NodeType.RANDOM_BATTLE, 250, 350, "Bobota Forest", skin, () -> {
             // Logika: Random Enemy (50% Skeleton, 50% Slime)
-            EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.SKELETON : EnemyType.SLIME;
+            EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.ANOMIMUS : EnemyType.BEELING;
 
             game.setScreen(new BattleScreen(game,
-                "Background/Temps.png",
+                "Background/Bobota Forest.png",
+                randomEnemy,
+                () -> game.setScreen(new WorldMapScreen(game)) // Callback: Balik ke Map setelah menang
+            ));
+        });
+        addNode(NodeType.RANDOM_BATTLE, 500, 50, "Kalimba Forest", skin, () -> {
+            // Logika: Random Enemy (50% Skeleton, 50% Slime)
+            EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.ANOMIMUS : EnemyType.BEELING;
+
+            game.setScreen(new BattleScreen(game,
+                "Background/Kalimba Forest.png",
+                randomEnemy,
+                () -> game.setScreen(new WorldMapScreen(game)) // Callback: Balik ke Map setelah menang
+            ));
+        });
+        addNode(NodeType.RANDOM_BATTLE, 950, 300, "Aliz Ruins", skin, () -> {
+            // Logika: Random Enemy (50% Skeleton, 50% Slime)
+            EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.SLIME : EnemyType.GOLEM;
+
+            game.setScreen(new BattleScreen(game,
+                "Background/Aliz Ruins.png",
+                randomEnemy,
+                () -> game.setScreen(new WorldMapScreen(game)) // Callback: Balik ke Map setelah menang
+            ));
+        });
+        addNode(NodeType.RANDOM_BATTLE, 100, 600, "Kazak Ruins", skin, () -> {
+            // Logika: Random Enemy (50% Skeleton, 50% Slime)
+            EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.SLIME : EnemyType.GOLEM;
+
+            game.setScreen(new BattleScreen(game,
+                "Background/Kazak Ruins.png",
                 randomEnemy,
                 () -> game.setScreen(new WorldMapScreen(game)) // Callback: Balik ke Map setelah menang
             ));
         });
 
-        // --- 3. NODE RANDOM BATTLE (Gunung Berapi - Hard) ---
-        addNode(NodeType.RANDOM_BATTLE, 800, 600, "Mt. Doom", skin, () -> {
-            // Logika: Lawan Boss atau Musuh Kuat
-            game.setScreen(new BattleScreen(game,
-                "Background/Lava.png",
-                EnemyType.DRAGON_BOSS,
-                () -> game.setScreen(new WorldMapScreen(game))
-            ));
+        // --- 3. NODE BOSS HUTAN (FARHAT - Level 10+) ---
+        // Ubah EnemyType ke FARHAT (sesuai Enum baru Anda)
+        addNode(NodeType.RANDOM_BATTLE, 800, 600, "Babatan Forest (Boss)", skin, () -> {
+
+            // CEK LEVEL PLAYER
+            if (game.playerStats.getLevel() < 10) {
+                showLevelLockedDialog("Farhat", 10);
+            } else {
+                // Level Cukup -> Mulai Battle Lawan Boss
+                game.setScreen(new BattleScreen(
+                    game,
+                    "Background/Bobota Forest.png",
+                    EnemyType.FARHAT, // Pastikan EnemyType.FARHAT ada
+                    () -> {
+                        // Reward khusus Boss bisa ditaruh disini atau di UnitStats
+                        game.setScreen(new WorldMapScreen(game));
+                    }
+                ));
+            }
         });
 
-        // --- 4. NODE SHOP (Desa Pedagang) ---
+        // --- 4. NODE BOSS RUINS (MANDA - Level 10+) ---
+        // Anggap ini node baru atau mengganti yang lama
+        addNode(NodeType.RANDOM_BATTLE, 1200, 200, "Malaketh Ruins (Boss)", skin, () -> {
+
+            if (game.playerStats.getLevel() < 10) {
+                showLevelLockedDialog("Manda", 10);
+            } else {
+                game.setScreen(new BattleScreen(
+                    game,
+                    "Background/Kazak Ruins.png",
+                    EnemyType.MANDA, // Pastikan EnemyType.MANDA ada
+                    () -> game.setScreen(new WorldMapScreen(game))
+                ));
+            }
+        });
+
+        // --- 5. NODE SHOP (Desa Pedagang) ---
         addNode(NodeType.SHOP, 450, 200, "Merchant Village", skin, () -> {
             System.out.println("Masuk ke Shop Screen...");
             game.setScreen(new ShopScreen(game));
+            bgm.play();
         });
+    }
+
+    private void showLevelLockedDialog(String bossName, int reqLevel) {
+        Skin skin = ResourceManager.getInstance().getSkin();
+        com.badlogic.gdx.scenes.scene2d.ui.Dialog d = new com.badlogic.gdx.scenes.scene2d.ui.Dialog("WARNING", skin);
+
+        d.text("DANGER! This area is controlled by " + bossName + ".\n" +
+            "You need Level " + reqLevel + " to enter.");
+        d.button("OK");
+        d.show(stage);
+        bgm.play();
     }
 
     private void addNode(NodeType type, float x, float y, String name, Skin skin, Runnable action) {
@@ -198,9 +271,11 @@ public class WorldMapScreen implements Screen {
         nameLabel.setPosition(x + (nodeBtn.getWidth() - nameLabel.getWidth()) / 2, y - 20);
 
         // Listener Klik
+        nodeBtn.addListener(new SoundListener());
         nodeBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                bgm.stop();
                 action.run();
             }
         });
@@ -252,7 +327,5 @@ public class WorldMapScreen implements Screen {
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() {
-        bgm.stop();
-    }
+    @Override public void hide() {}
 }

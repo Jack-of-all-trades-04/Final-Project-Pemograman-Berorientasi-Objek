@@ -5,6 +5,7 @@ import com.FEA_3.frontend.Entity.Skill;
 import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Main;
 import com.FEA_3.frontend.Utils.ResourceManager;
+import com.FEA_3.frontend.Utils.SoundListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -71,6 +72,7 @@ public class SkillScreen implements Screen {
                 game.setScreen(new WorldMapScreen(game));
             }
         });
+        backBtn.addListener(new SoundListener());
         root.add(backBtn).width(200).height(50).padTop(20);
 
         stage.addActor(root);
@@ -131,6 +133,7 @@ public class SkillScreen implements Screen {
                 showSkillDetailDialog(skill, isLocked);
             }
         });
+        rowBtn.addListener(new SoundListener());
 
         table.add(rowBtn).width(650).height(80).padBottom(5);
         table.row();
@@ -182,6 +185,7 @@ public class SkillScreen implements Screen {
                 detailDialog.hide();
             }
         });
+        closeBtn.addListener(new SoundListener());
         detailDialog.getButtonTable().add(closeBtn).width(100).pad(10);
 
         detailDialog.show(stage);

@@ -1,6 +1,6 @@
 package com.FEA_3.frontend.Patterns.Command;
 
-import com.FEA_3.frontend.Core.UnitState;
+import com.FEA_3.frontend.Entity.UnitState;
 import com.FEA_3.frontend.Entity.GameUnit;
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.badlogic.gdx.audio.Sound;

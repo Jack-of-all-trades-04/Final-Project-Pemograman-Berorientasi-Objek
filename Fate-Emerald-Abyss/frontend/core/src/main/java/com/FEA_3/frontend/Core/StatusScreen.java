@@ -3,6 +3,7 @@ package com.FEA_3.frontend.Core;
 import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Main;
 import com.FEA_3.frontend.Utils.ResourceManager;
+import com.FEA_3.frontend.Utils.SoundListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -91,6 +92,7 @@ public class StatusScreen implements Screen {
                 game.setScreen(new WorldMapScreen(game));
             }
         });
+        closeBtn.addListener(new SoundListener());
 
         // 6. Menyusun Semuanya ke Root
         root.add(title).colspan(2).padBottom(50).row();

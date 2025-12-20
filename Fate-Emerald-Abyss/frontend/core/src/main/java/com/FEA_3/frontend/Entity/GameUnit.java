@@ -1,6 +1,5 @@
 package com.FEA_3.frontend.Entity;
 
-import com.FEA_3.frontend.Core.UnitState;
 import com.FEA_3.frontend.Patterns.Command.Command;
 import com.FEA_3.frontend.Patterns.Observer.UnitObserver;
 import com.FEA_3.frontend.Patterns.Strategy.BattleStrategy;
@@ -208,7 +207,13 @@ public class GameUnit {
         }
 
         stats.setCurrentHp(newHp);
-        notifyObservers();
+        notifyDamageObservers(dmg, isCrit); // Method baru
+    }
+
+    private void notifyDamageObservers(int dmg, boolean isCrit) {
+        for (UnitObserver obs : observers) {
+            obs.onDamageTaken(dmg, isCrit);
+        }
     }
 
     private void notifyObservers() {
@@ -240,5 +245,41 @@ public class GameUnit {
     public int getMaxHp() { return stats.getMaxHp(); }
     public UnitStats getStats() {
         return this.stats;
+    }
+
+    public boolean isDefending() {
+        return isDefending;
+    }
+
+    public int getBurnTurns() {
+        return burnTurns;
+    }
+
+    public int getBleedTurns() {
+        return bleedTurns;
+    }
+
+    public int getDefenseBuffTurns() {
+        return defenseBuffTurns;
+    }
+
+    public int getSpeedBuffTurns() {
+        return speedBuffTurns;
+    }
+
+    public int getAccuracyDebuffTurns() {
+        return accuracyDebuffTurns;
+    }
+
+    public int getSlowDebuffTurns() {
+        return slowDebuffTurns;
+    }
+
+    public boolean isNextHitGuaranteed() {
+        return nextHitGuaranteed;
+    }
+
+    public boolean isHasEndure() {
+        return hasEndure;
     }
 }

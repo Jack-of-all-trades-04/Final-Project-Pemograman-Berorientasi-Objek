@@ -1,4 +1,4 @@
-package com.FEA_3.frontend.Core;
+package com.FEA_3.frontend.Entity;
 
 public enum UnitState {
     IDLE,   // Diam/Bernafas
