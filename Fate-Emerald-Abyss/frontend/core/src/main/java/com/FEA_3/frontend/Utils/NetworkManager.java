@@ -1,11 +1,16 @@
 package com.FEA_3.frontend.Utils;
 
+import com.FEA_3.frontend.Entity.Consumable;
 import com.FEA_3.frontend.Entity.UnitStats;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net;
 import com.badlogic.gdx.net.HttpRequestBuilder;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkManager {
     private static NetworkManager instance;
@@ -27,6 +32,26 @@ public class NetworkManager {
             .header("Content-Type", "application/json")
             .build();
 
+        StringBuilder inventoryJson = new StringBuilder("[");
+        List<Consumable> items = stats.getInventory();
+
+        if (items != null) {
+            for (int i = 0; i < items.size(); i++) {
+                Consumable item = items.get(i);
+                inventoryJson.append("{")
+                    .append("\"name\":\"").append(item.getName()).append("\",")
+                    .append("\"quantity\":").append(item.getQuantity()).append(",")
+                    // Enum dikirim sebagai String agar Backend bisa membacanya
+                    .append("\"type\":\"").append(item.getType().toString()).append("\",")
+                    .append("\"value\":").append(item.getValue())
+                    .append("}");
+
+                // Tambah koma jika bukan item terakhir
+                if (i < items.size() - 1) inventoryJson.append(",");
+            }
+        }
+        inventoryJson.append("]");
+
         // 1. Buat JSON String secara manual atau pakai LibGDX Json
         // Kita pakai cara manual yang aman agar key-nya persis dengan Backend
         String jsonContent = "{" +
@@ -42,7 +67,8 @@ public class NetworkManager {
             "\"currentMp\": " + stats.getCurrentMp() + "," +
             "\"attackPower\": " + stats.getAttackPower() + "," +
             "\"defense\": " + stats.getDefense() + "," +
-            "\"speed\": " + stats.getSpeed() +
+            "\"speed\": " + stats.getSpeed() + "," +
+            "\"inventoryItems\": " + inventoryJson.toString() +
             "}";
 
         httpRequest.setContent(jsonContent);
@@ -137,6 +163,28 @@ public class NetworkManager {
                     stats.setCurrentExp(root.getInt("currentExp"));
                     stats.setMaxExp(root.getInt("maxExp"));
                     stats.setManaCrystals(root.getInt("manaCrystals"));
+
+                    // --- LOAD INVENTORY (PARSING ARRAY) ---
+                    List<Consumable> inventory = new ArrayList<>();
+                    JsonValue invArray = root.get("inventoryItems"); // Sesuai nama field di Backend
+
+                    if (invArray != null) {
+                        for (JsonValue itemJson : invArray) {
+                            String iName = itemJson.getString("name", "Item");
+                            String iTypeStr = itemJson.getString("type", "POTION_HP");
+                            int iVal = itemJson.getInt("value", 0);
+                            int iQty = itemJson.getInt("quantity", 1);
+
+                            try {
+                                // Convert String JSON balik ke Enum Java
+                                Consumable.ItemType type = Consumable.ItemType.valueOf(iTypeStr);
+                                // Gunakan method addItem (Overload 4 param) untuk memasukkan data
+                                stats.addItem(iName, type, iVal, iQty);
+                            } catch (Exception e) {
+                                System.err.println("Unknown item type skip: " + iTypeStr);
+                            }
+                        }
+                    }
 
                     // Kirim ke Main thread
                     Gdx.app.postRunnable(() -> callback.onSuccess(stats));

@@ -9,7 +9,7 @@ public class Consumable {
     public enum ItemType {
         POTION_HP,
         POTION_MP,
-        ELIXIR_BUFF
+        BUFF_DEF
     }
 
     public Consumable(String name, ItemType type, int value, int qty) {
@@ -17,6 +17,11 @@ public class Consumable {
         this.type = type;
         this.value = value;
         this.quantity = qty;
+    }
+
+    // Method ini WAJIB ADA karena dipanggil oleh UnitStats.addItem()
+    public void addQuantity(int amount) {
+        this.quantity += amount;
     }
 
     public void use(GameUnit target) {
@@ -33,17 +38,41 @@ public class Consumable {
             case POTION_MP:
                 int newMp = target.getStats().getCurrentMp() + value;
                 if (newMp > target.getStats().getMaxMp()) newMp = target.getStats().getMaxMp();
-                // Asumsi ada setter MP
-                // target.getStats().setCurrentMp(newMp);
+                target.getStats().setCurrentMp(newMp);
+                System.out.println("Recovered " + value + " MP");
                 break;
 
-            case ELIXIR_BUFF:
-                // Logic buff turn (kompleks, simpan untuk update berikutnya)
-                System.out.println("Buff applied!");
+            case BUFF_DEF:
+                int currentDef = target.getStats().getDefense();
+                // Hitung kenaikan: Defense Saat Ini * (Value / 100)
+                // Contoh: Def 20, Value 30 (30%) -> Kenaikan = 20 * 0.3 = 6
+                int increaseAmount = (int) (currentDef * (value / 100.0f));
+                // Pastikan minimal naik 1 jika persentase terlalu kecil
+                if (increaseAmount < 1) increaseAmount = 1;
+                int newDef = currentDef + increaseAmount;
+                target.getStats().setDefense(newDef);
+                System.out.println("Defense increased by " + increaseAmount + " (" + value + "%)");
+                System.out.println("Buff applied! Total DEF: " + newDef);
                 break;
         }
         quantity--;
     }
 
-    public String getName() { return name + " (x" + quantity + ")"; }
+    public String getName() {
+        return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public ItemType getType() {
+        return type;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public String getDisplayName() { return name + " (x" + quantity + ")"; }
 }

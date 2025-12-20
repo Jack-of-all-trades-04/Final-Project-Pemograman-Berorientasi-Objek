@@ -1,7 +1,9 @@
 package com.FEA_3.frontend.Core;
 
+import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Main;
 import com.FEA_3.frontend.Patterns.Factory.UnitFactory;
+import com.FEA_3.frontend.Utils.NetworkManager;
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -172,7 +174,7 @@ public class WorldMapScreen implements Screen {
         // --- 4. NODE SHOP (Desa Pedagang) ---
         addNode(NodeType.SHOP, 450, 200, "Merchant Village", skin, () -> {
             System.out.println("Masuk ke Shop Screen...");
-            // game.setScreen(new ShopScreen(game)); // Nanti dibuat
+            game.setScreen(new ShopScreen(game));
         });
     }
 
@@ -225,9 +227,27 @@ public class WorldMapScreen implements Screen {
 
     // Boilerplate standard
     @Override public void show() {
+        Gdx.input.setInputProcessor(stage);
+
         if (bgm != null && !bgm.isPlaying()) {
             bgm.play();
         }
+
+        // LOAD ULANG DATA DARI SERVER (Agar Uang Sinkron setelah dari Shop)
+        System.out.println("Refreshing Player Data from Server...");
+        NetworkManager.getInstance().loadPlayer("User1", new NetworkManager.LoadCallback() {
+            @Override
+            public void onSuccess(UnitStats stats) {
+                // Update variable global 'playerStats' di Main
+                game.playerStats = stats;
+                System.out.println("Data Synced! Money: " + stats.getManaCrystals());
+            }
+
+            @Override
+            public void onFail(String msg) {
+                System.err.println("Gagal Sync Data: " + msg);
+            }
+        });
     }
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}
