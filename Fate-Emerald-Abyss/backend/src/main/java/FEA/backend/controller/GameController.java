@@ -22,4 +22,10 @@ public class GameController {
     public PlayerData saveGame(@RequestBody PlayerData data) {
         return gameService.savePlayerProgress(data);
     }
+
+    @DeleteMapping("/delete/{userId}")
+    public String deleteGame(@PathVariable String userId) {
+        gameService.deletePlayer(userId);
+        return "Data deleted successfully";
+    }
 }

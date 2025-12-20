@@ -21,7 +21,9 @@ public class ResourceManager {
     public void loadAssets() {
         // --- LOAD AUDIO ---
         // 1. Music (BGM)
-        assetManager.load("Audio/Music/Battle_Music.wav", Music.class);
+        assetManager.load("Soundtrack/BattleScreen.mp3", Music.class);
+        assetManager.load("Soundtrack/MainMenu.mp3", Music.class);
+        assetManager.load("Soundtrack/WorldMap.mp3", Music.class);
 
         // 2. Sounds (SFX)
         assetManager.load("Audio/Sound_Effect/ui_click1.wav", Sound.class);

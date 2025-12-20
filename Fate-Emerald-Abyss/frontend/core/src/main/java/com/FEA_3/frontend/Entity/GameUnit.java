@@ -19,14 +19,64 @@ public class GameUnit {
     private float stateTimer = 0f;
     private boolean isDefending = false;
 
-    public void attackTarget(GameUnit target) {
-        // 1. CEK ACCURACY (Level Difference Penalty)
-        float hitChance = stats.getAccuracy();
-        int levelDiff = target.getStats().getLevel() - this.stats.getLevel();
+    // --- STATUS EFFECTS (FLAGS & COUNTERS) ---
+    private int burnTurns = 0;
+    private int bleedTurns = 0;
+    private boolean isStunned = false;
+    private int defenseBuffTurns = 0; // Buckle Up
+    private int speedBuffTurns = 0;   // Dodge
+    private int accuracyDebuffTurns = 0; // Divine Light
+    private int slowDebuffTurns = 0;     // Blizzard
+    private boolean nextHitGuaranteed = false; // Visual Calculus
+    private boolean hasEndure = false; // Passive Endure
 
-        // Jika musuh lebih tinggi levelnya, akurasi turun 5% per level
-        if (levelDiff > 0) {
-            hitChance -= (levelDiff * 5.0f);
+    // --- LOGIC UPDATE TURN (Panggil ini setiap awal giliran) ---
+    public void applyTurnEffects() {
+        // 1. Handle DOT (Damage Over Time)
+        if (burnTurns > 0) {
+            int dmg = (int) (stats.getMaxHp() * 0.05); // 5% HP per turn
+            takeDamage(dmg, false);
+            System.out.println(stats.getName() + " terkena Burn damage: " + dmg);
+            burnTurns--;
+        }
+
+        if (bleedTurns > 0) {
+            int dmg = 10; // Flat damage atau %
+            takeDamage(dmg, false);
+            System.out.println(stats.getName() + " terkena Bleed damage: " + dmg);
+            bleedTurns--;
+        }
+
+        // 2. Kurangi Durasi Buff/Debuff
+        if (defenseBuffTurns > 0) defenseBuffTurns--;
+        if (speedBuffTurns > 0) speedBuffTurns--;
+        if (accuracyDebuffTurns > 0) accuracyDebuffTurns--;
+        if (slowDebuffTurns > 0) slowDebuffTurns--;
+
+        // Reset Stun di awal turn (setelah efek skip turn diproses di BattleScreen)
+        // isStunned = false; // Logic reset stun sebaiknya diatur di BattleScreen setelah skip
+    }
+
+    // --- UPDATE ATTACK LOGIC (Visual Calculus & Accuracy Debuff) ---
+    public void attackTarget(GameUnit target) {
+        float hitChance = stats.getAccuracy();
+
+        // Cek Debuff Accuracy (Divine Light)
+        if (this.accuracyDebuffTurns > 0) {
+            hitChance -= 25.0f;
+        }
+
+        // Cek Visual Calculus (Guaranteed Hit)
+        if (this.nextHitGuaranteed) {
+            hitChance = 1000.0f; // Pasti kena
+            this.nextHitGuaranteed = false; // Reset setelah dipakai
+            System.out.println("Visual Calculus activated!");
+        }
+
+        // Cek Target Dodge
+        if (target.speedBuffTurns > 0) {
+            // Logic dodge sederhana: kurangi hit chance drastis
+            hitChance -= 25.0f;
         }
 
         // Roll RNG (0-100)
@@ -78,7 +128,6 @@ public class GameUnit {
         for (Skill s : skills) {
             if (currentLvl >= s.getUnlockLevel()) {
                 activeSkills.add(s);
-
                 // Jika Passive, langsung apply efeknya sekali saja (atau tiap battle start)
                 if (s.getType() == Skill.SkillType.PASSIVE) {
                     s.use(this, null);
@@ -91,20 +140,22 @@ public class GameUnit {
         return activeSkills;
     }
 
-    // Method untuk ganti state
+    // 1. Method untuk mengganti State & Reset Waktu
     public void setState(UnitState newState) {
         this.state = newState;
-        this.stateTimer = 0f; // Reset timer tiap ganti state
+        this.stateTimer = 0f; // Reset waktu jadi 0 setiap ganti animasi
     }
 
+    // 2. Method Update Waktu (JANTUNG UTAMA ANIMASI)
     public void update(float delta) {
-        stateTimer += delta;
+        stateTimer += delta; // Tambah waktu sesuai frame rate
 
-        // Logika kembali ke IDLE otomatis setelah animasi selesai
-        if (state == UnitState.ATTACK && stateTimer > 0.5f) { // Animasi Attack 0.5 detik
+        // Logika Reset Otomatis:
+        // Jika sudah animasi Attack/Hurt selama 0.5 detik, kembalikan ke IDLE
+        if (state == UnitState.ATTACK && stateTimer > 0.5f) {
             setState(UnitState.IDLE);
         }
-        if (state == UnitState.HURT && stateTimer > 0.3f) { // Animasi Hurt 0.3 detik
+        else if (state == UnitState.HURT && stateTimer > 0.5f) {
             setState(UnitState.IDLE);
         }
     }
@@ -132,22 +183,30 @@ public class GameUnit {
     }
 
     // Update takeDamage untuk handle UI Critical
+    // --- UPDATE TAKE DAMAGE (Endure & Buckle Up) ---
     public void takeDamage(int dmg, boolean isCrit) {
-        if (isDefending) {
-            dmg /= 2;
-            isDefending = false;
+        // 1. Cek Buckle Up (Defense Buff)
+        if (defenseBuffTurns > 0) {
+            dmg = (int) (dmg * 0.55); // Kurangi 45% (sisa 55%)
+            System.out.println("Buckle Up reduced damage!");
         }
 
+        // 2. Logic Damage standar
+        if (isDefending) { dmg /= 2; isDefending = false; }
         int current = stats.getCurrentHp();
         int newHp = current - dmg;
-        if (newHp < 0) newHp = 0;
+
+        // 3. Cek PASSIVE ENDURE
+        if (newHp <= 0 && hasEndure) {
+            newHp = 1; // Bertahan hidup dengan 1 HP
+            hasEndure = false; // Hanya sekali per battle (atau reset logic lain)
+            System.out.println(stats.getName() + " ENDURED the attack!");
+        } else if (newHp < 0) {
+            newHp = 0;
+        }
+
         stats.setCurrentHp(newHp);
-
-        // Log
-        String critText = isCrit ? " (CRITICAL!)" : "";
-        System.out.println(stats.getName() + " terkena " + dmg + " damage" + critText);
-
-        notifyObservers(); // Perlu update observer untuk kirim status crit nanti
+        notifyObservers();
     }
 
     private void notifyObservers() {
@@ -160,6 +219,19 @@ public class GameUnit {
         // Cek nyawa dari stats, BUKAN dari variabel lokal
         return stats.getCurrentHp() <= 0;
     }
+    public List<Skill> getAllSkills() {
+        return skills;
+    }
+    public void setBurn(int turns) { this.burnTurns = turns; }
+    public void setBleed(int turns) { this.bleedTurns = turns; }
+    public void setStunned(boolean stun) { this.isStunned = stun; }
+    public boolean isStunned() { return isStunned; }
+    public void setDefenseBuff(int turns) { this.defenseBuffTurns = turns; }
+    public void setSpeedBuff(int turns) { this.speedBuffTurns = turns; }
+    public void setAccuracyDebuff(int turns) { this.accuracyDebuffTurns = turns; }
+    public void setSlowDebuff(int turns) { this.slowDebuffTurns = turns; }
+    public void setNextHitGuaranteed(boolean val) { this.nextHitGuaranteed = val; }
+    public void setHasEndure(boolean val) { this.hasEndure = val; }
     public int getAttackPower() { return stats.getAttackPower(); }
     public String getName() { return stats.getName(); }
     public int getHp() { return stats.getCurrentHp(); }

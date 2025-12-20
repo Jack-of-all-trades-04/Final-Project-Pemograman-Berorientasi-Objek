@@ -34,4 +34,10 @@ public class GameServices {
 
         return playerRepository.save(data);
     }
+
+    public void deletePlayer(String userId) {
+        if (playerRepository.existsById(userId)) {
+            playerRepository.deleteById(userId);
+        }
+    }
 }

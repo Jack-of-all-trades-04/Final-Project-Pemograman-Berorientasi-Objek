@@ -5,6 +5,7 @@ import com.FEA_3.frontend.Patterns.Factory.UnitFactory;
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -21,6 +22,7 @@ public class WorldMapScreen implements Screen {
     private Main game;
     private Stage stage;
     private Texture mapTexture;
+    private Music bgm;
 
     // Texture untuk masing-masing jenis Node
     private Texture battleNodeTex;
@@ -38,6 +40,7 @@ public class WorldMapScreen implements Screen {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        bgm = ResourceManager.getInstance().getMusic("Soundtrack/WorldMap.mp3");
 
         try {
             mapTexture = new Texture(Gdx.files.internal("Background/WorldMap.png"));
@@ -77,8 +80,47 @@ public class WorldMapScreen implements Screen {
 
         Skin skin = ResourceManager.getInstance().getSkin();
 
-        // --- TAMBAHAN TOMBOL STATUS (POJOK KIRI ATAS) ---
+        float screenH = Gdx.graphics.getHeight();
+        float screenW = Gdx.graphics.getWidth();
+
+        // 1. TOMBOL STATUS (Kiri Atas) - Sudah ada
         TextButton statusBtn = new TextButton("STATUS", skin);
+        statusBtn.setPosition(20, screenH - 60);
+        statusBtn.setSize(100, 40);
+        statusBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new StatusScreen(game));
+            }
+        });
+        stage.addActor(statusBtn);
+
+        // 2. TOMBOL SKILLS (Sebelah Status)
+        TextButton skillBtn = new TextButton("SKILLS", skin);
+        skillBtn.setPosition(130, screenH - 60); // Geser X +110
+        skillBtn.setSize(100, 40);
+        skillBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new SkillScreen(game));
+            }
+        });
+        stage.addActor(skillBtn);
+
+        // 3. TOMBOL MAIN MENU (Kanan Atas)
+        TextButton menuBtn = new TextButton("MENU", skin);
+        menuBtn.setPosition(screenW - 120, screenH - 60); // Pojok Kanan
+        menuBtn.setSize(100, 40);
+        menuBtn.setColor(Color.SALMON); // Warna beda biar mencolok (misal mau keluar)
+        menuBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Konfirmasi keluar? Atau langsung aja
+                // Jangan lupa save otomatis kalau mau, atau peringatkan user
+                game.setScreen(new MainMenuScreen(game));
+            }
+        });
+        stage.addActor(menuBtn);
 
         // Posisi: x=20, y=TinggiLayar - TinggiTombol - Margin
         statusBtn.setPosition(20, Gdx.graphics.getHeight() - 60);
@@ -111,7 +153,7 @@ public class WorldMapScreen implements Screen {
             EnemyType randomEnemy = Math.random() > 0.5 ? EnemyType.SKELETON : EnemyType.SLIME;
 
             game.setScreen(new BattleScreen(game,
-                "Background/bg_forest.png",
+                "Background/Temps.png",
                 randomEnemy,
                 () -> game.setScreen(new WorldMapScreen(game)) // Callback: Balik ke Map setelah menang
             ));
@@ -182,9 +224,15 @@ public class WorldMapScreen implements Screen {
     }
 
     // Boilerplate standard
-    @Override public void show() {}
+    @Override public void show() {
+        if (bgm != null && !bgm.isPlaying()) {
+            bgm.play();
+        }
+    }
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() {}
+    @Override public void hide() {
+        bgm.stop();
+    }
 }
