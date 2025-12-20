@@ -1,171 +1,92 @@
 package com.FEA_3.frontend.Core;
 
-import com.FEA_3.frontend.Main;
-import com.FEA_3.frontend.Patterns.Command.DefendCommand;
-import com.FEA_3.frontend.Utils.NetworkManager;
-import com.FEA_3.frontend.Entity.UnitStats;
 import com.FEA_3.frontend.Entity.GameUnit;
-import com.FEA_3.frontend.Patterns.Command.AttackCommand;
-import com.FEA_3.frontend.Patterns.Command.Command;
+import com.FEA_3.frontend.Entity.Skill;
+import com.FEA_3.frontend.Entity.UnitStats;
+import com.FEA_3.frontend.Main;
+import com.FEA_3.frontend.Patterns.Command.*;
 import com.FEA_3.frontend.Patterns.Factory.UnitFactory;
-import com.FEA_3.frontend.UI.HealthBar;
+import com.FEA_3.frontend.UI.EffectWidget; // Import Widget Baru
+import com.FEA_3.frontend.UI.StatusWidget; // Import Widget Baru
 import com.FEA_3.frontend.Utils.ResourceManager;
 import com.FEA_3.frontend.Utils.SoundListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.List;
+
 public class BattleScreen implements Screen {
-    private SpriteBatch batch;
-    private Texture heroImg, enemyImg;
+    private Main game;
     private Stage stage;
-    private float heroX, heroY;
-    private float enemyX, enemyY;
-    private GameUnit hero, enemy;
-    private BattleState currentState;
-    private TextButton btnAttack, btnSkill, btnItem, btnDefend, btnRun;
     private Texture backgroundTexture;
     private Music bgm;
-    private float uiPanelHeight;
-    private Runnable onVictoryAction;
-    private Main game;
+    // Units
+    private GameUnit hero;
+    private GameUnit enemy;
+    private Texture heroImg, enemyImg;
 
-    // --- TAMBAHAN UNTUK LOADING STATE ---
-    private boolean isLoading = true; // Status: Apakah sedang ambil data?
-    private Label loadingLabel;       // Tulisan "Connecting..."
+    // --- UI COMPONENTS BARU ---
+    private StatusWidget playerHpWidget, playerMpWidget;
+    private StatusWidget enemyHpWidget, enemyMpWidget;
+    private EffectWidget playerEffects, enemyEffects;
+
+    // UI Tombol (Agar bisa di-disable saat giliran musuh)
+    private Table commandTable;
+
+    // Logic Variables
+    private enum BattleState { PLAYER_TURN, ENEMY_TURN, VICTORY, DEFEAT }
+    private BattleState currentState;
+    private Runnable onVictoryAction;
+
+    // Layout
+    private float uiPanelHeight;
+    private float heroX, heroY, enemyX, enemyY;
 
     public BattleScreen(Main game, String bgPath, EnemyType enemyType, Runnable onVictory) {
-        batch = new SpriteBatch();
         this.game = game;
-        ResourceManager.getInstance().loadAssets();
-        bgm = ResourceManager.getInstance().getMusic("Audio/Music/Battle_Music.wav");
         this.onVictoryAction = onVictory;
-        // Setting agar musik mengulang (Looping)
-        bgm.setLooping(true);
-        bgm.setVolume(0.5f); // Volume 50%
 
-        // 1. Load Background Dinamis
-        // Pastikan Anda sudah meload ini di ResourceManager atau load manual jika belum
-        // Untuk aman, kita load manual via manager wrapper atau direct texture (untuk test)
+        stage = new Stage(new ScreenViewport());
+        ResourceManager.getInstance().loadAssets();
+
+        // 1. Load Background & Asset
         try {
             backgroundTexture = new Texture(Gdx.files.internal(bgPath));
         } catch (Exception e) {
-            // Fallback jika gambar gak ada
-            backgroundTexture = ResourceManager.getInstance().getTexture("Background/Temps.png");
+            backgroundTexture = ResourceManager.getInstance().getTexture("Background/bg_forest.png"); // Fallback
         }
+        bgm = ResourceManager.getInstance().getMusic("Soundtrack/BattleScreen.mp3");
+        bgm.setLooping(true);
+        bgm.play();
 
-        // 2. Setup Musuh Dinamis
+        // 2. Setup Units
+        // Player ambil dari Global Main Data
+        hero = new GameUnit(game.playerStats);
+        heroImg = ResourceManager.getInstance().getTexture("Entity/Player/Temp.png"); // Ganti path gambar MC Anda
+        UnitFactory.loadSkillsForPlayer(hero);
+
+        // Enemy baru tiap battle
         enemy = UnitFactory.createEnemy(enemyType);
         enemyImg = UnitFactory.getEnemyTexture(enemyType);
 
-        // 1. Load Gambar dulu (Aset lokal aman diload langsung)
-        heroImg = ResourceManager.getInstance().getTexture("Entity/Player/Temp.png");
-
-        // Setup Stage Sederhana untuk Loading Text
-        stage = new Stage(new ScreenViewport());
-        Skin skin = ResourceManager.getInstance().getSkin();
-        loadingLabel = new Label("Connecting to Server...", skin);
-        loadingLabel.setPosition(Gdx.graphics.getWidth()/2f - 50, Gdx.graphics.getHeight()/2f);
-        stage.addActor(loadingLabel);
-
-        // 2. PANGGIL BACKEND
-        // Kita minta data user dengan ID "Commander" (bisa diganti nanti)
-        NetworkManager.getInstance().loadPlayerData("Commander", new NetworkManager.DataCallback() {
-            @Override
-            public void onSuccess(UnitStats stats) {
-                // DATA DATANG! Hore!
-                System.out.println("Data loaded: " + stats.getName());
-
-                // Inisialisasi Hero dengan data dari Server
-                // ASUMSI: Anda sudah refactor GameUnit menerima UnitStats.
-                // Jika belum, pakai: new GameUnit(stats.getName(), stats.getMaxHp(), stats.getAttackPower());
-                hero = new GameUnit(game.playerStats);
-
-                // Lanjut inisialisasi musuh & UI
-                initGameLogic();
-
-                // Matikan loading
-                isLoading = false;
-                loadingLabel.remove(); // Hapus tulisan loading
-            }
-
-            @Override
-            public void onFail(Throwable t) {
-                // INTERNET MATI / SERVER ERROR
-                System.out.println("Gagal konek: " + t.getMessage());
-
-                // Fallback: Pakai data offline biar game gak crash
-                UnitStats offlineStats = new UnitStats("Artoria", 1000, 200, 50, 20, 10);
-                hero = new GameUnit(offlineStats);
-
-                initGameLogic();
-                isLoading = false;
-                loadingLabel.remove();
-            }
-        });
-    }
-
-    private void showVictoryDialog() {
-        Skin skin = ResourceManager.getInstance().getSkin();
-
-        // 1. Ambil Hadiah dari Stats Musuh
-        // (Asumsi Anda sudah buat getter getStats() di GameUnit.java)
-        // Jika belum, tambahkan public UnitStats getStats() { return stats; } di GameUnit
-        int expGained = enemy.getStats().getExpReward();
-        int crystalGained = enemy.getStats().getCrystalReward();
-
-        // 2. Berikan ke Player
-        hero.getStats().addExp(expGained);
-        hero.getStats().setCrystalReward(crystalGained);
-        hero.getStats().addManaCrystals(crystalGained);
-
-        // TODO: Panggil NetworkManager.savePlayer(...) disini nanti agar tersimpan ke Database
-
-        // 3. Buat Jendela Dialog Pop-up
-        Dialog winDialog = new Dialog("VICTORY!", ResourceManager.getInstance().getSkin()) {
-            @Override
-            protected void result(Object object) {
-                // SAAT KLIK CONTINUE:
-                // Jalankan instruksi yang sudah disimpan tadi
-                if (onVictoryAction != null) {
-                    onVictoryAction.run();
-                }
-            }
-        };
-
-        // Isi Teks Dialog
-        winDialog.text("You defeated " + enemy.getStats().getName() + "!\n\n" +
-            "Gained EXP: " + expGained + "\n" +
-            "Mana Crystals: " + crystalGained);
-
-        // Tombol OK
-        winDialog.button("Continue", true);
-
-        // Tampilkan di tengah layar
-        winDialog.show(stage);
-    }
-
-    // Method baru: Dipanggil HANYA setelah data hero siap
-    private void initGameLogic() {
-        // --- SETUP MUSUH (FACTORY) ---
-        EnemyType currentEnemyType = EnemyType.SKELETON;
-        enemy = UnitFactory.createEnemy(currentEnemyType);
-        enemyImg = UnitFactory.getEnemyTexture(currentEnemyType);
-
         currentState = BattleState.PLAYER_TURN;
 
-        // Panggil setup UI yang asli
         setupUI();
     }
 
@@ -175,148 +96,300 @@ public class BattleScreen implements Screen {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
-        // 1. Container Utama (Panel Bawah)
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.bottom(); // Tempel di bawah layar
-        // --- 1. TENTUKAN TINGGI PANEL UI (PENTING) ---
-        // Misal kita ingin panel bawah tingginya 30% dari layar
-        uiPanelHeight = h * 0.3f;
+        // --- 1. SETTING POSISI UNIT (Agar berdiri di atas panel biru) ---
+        uiPanelHeight = h * 0.3f; // Tinggi panel UI 30% layar
+        float groundLevel = uiPanelHeight + 30; // Sedikit margin di atas panel
 
-        // --- 2. SETUP POSISI UNIT (Agar di atas panel) ---
-        // X tetap sama
-        heroX = w * 0.1f;
-        enemyX = w * 0.6f;
+        heroX = w * 0.15f;
+        heroY = groundLevel;
+        enemyX = w * 0.65f;
+        enemyY = groundLevel;
 
-        // Y HARUS DI ATAS PANEL
-        // Kita taruh di ketinggian panel + sedikit margin (misal 50 pixel)
-        float unitBaseY = uiPanelHeight + 50;
+        // --- 2. INISIALISASI WIDGET BARU ---
 
-        heroY = unitBaseY;
-        enemyY = unitBaseY;
+        // A. Widget Player
+        playerHpWidget = new StatusWidget(skin, Color.GREEN, false);
+        playerMpWidget = new StatusWidget(skin, Color.BLUE, true);
+        playerEffects = new EffectWidget(skin);
 
-        // --- SETUP HP BAR HERO ---
-        if (hero != null) {
-            HealthBar heroBar = new HealthBar(150, 20);
-            heroBar.setPosition(heroX, heroY + 160);
-            hero.addObserver(heroBar);
+        // Testing Icon Buff (Nanti dihapus kalau system buff sudah jalan)
+        playerEffects.addEffect("Icons/Sword.png", "Attack Up");
 
-            // --- SOLUSI: PAKSA UPDATE VISUAL AWAL ---
-            // Ambil data dari stats hero yang sekarang (990/1000) dan berikan ke Bar
-            heroBar.init(hero.getStats().getCurrentHp(), hero.getStats().getMaxHp());
+        // B. Widget Enemy
+        enemyHpWidget = new StatusWidget(skin, Color.RED, false);
+        enemyMpWidget = new StatusWidget(skin, Color.MAGENTA, true);
+        enemyEffects = new EffectWidget(skin);
 
-            stage.addActor(heroBar);
-        }
+        // C. Register Observer (Otomatis update HP saat kena damage)
+        hero.addObserver(playerHpWidget);
+        enemy.addObserver(enemyHpWidget);
 
-        // --- SETUP HP BAR ENEMY ---
-        if (enemy != null) {
-            HealthBar enemyBar = new HealthBar(150, 20);
-            enemyBar.setPosition(enemyX, enemyY + 160);
-            enemy.addObserver(enemyBar);
+        // D. Update Nilai Awal (HP & MP)
+        refreshStatsUI();
 
-            // Enemy juga di-init biar aman
-            enemyBar.init(enemy.getStats().getCurrentHp(), enemy.getStats().getMaxHp());
+        // --- 3. PANEL STATUS KIRI (PLAYER) ---
+        Table leftPanel = new Table();
+        leftPanel.top().left().pad(15);
+        leftPanel.add(new Label(hero.getStats().getName(), skin)).left().padBottom(5).row();
+        leftPanel.add(playerHpWidget).left().padBottom(2).row();
+        leftPanel.add(playerMpWidget).left().padBottom(5).row();
+        leftPanel.add(playerEffects).left().height(30); // Slot Buff
 
-            stage.addActor(enemyBar);
-        }
+        // --- 4. PANEL STATUS KANAN (ENEMY) ---
+        Table rightPanel = new Table();
+        rightPanel.top().right().pad(15);
+        rightPanel.add(new Label(enemy.getStats().getName(), skin)).right().padBottom(5).row();
+        rightPanel.add(enemyHpWidget).right().padBottom(2).row();
+        rightPanel.add(enemyMpWidget).right().padBottom(5).row();
+        rightPanel.add(enemyEffects).right().height(30); // Slot Debuff
 
-        // --- SETUP PANEL UI BAWAH ---
-        mainTable.setFillParent(true);
-        mainTable.bottom(); // Tempel di bawah
+        // --- 5. PANEL TENGAH (TOMBOL COMMAND) ---
+        commandTable = new Table();
+        // commandTable.debug(); // Uncomment untuk lihat garis layout
 
-        // Background Biru Transparan
-        Pixmap bgPixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        bgPixmap.setColor(0, 0, 0.5f, 0.8f);
-        bgPixmap.fill();
-        TextureRegionDrawable panelBg = new TextureRegionDrawable(new Texture(bgPixmap));
+        // Buat Tombol
+        TextButton btnAttack = createCommandButton("ATTACK", skin);
+        TextButton btnSkill = createCommandButton("SKILL", skin);
+        TextButton btnDefend = createCommandButton("DEFEND", skin);
+        TextButton btnItem = createCommandButton("ITEM", skin);
+        TextButton btnEscape = createCommandButton("ESCAPE", skin);
 
-        Table commandTable = new Table();
-        commandTable.setBackground(panelBg);
-
-        // 2. Buat Background Panel (Warna Biru Transparan ala FF)
-        // Kita pakai trik Pixmap agar tidak perlu aset gambar baru
-        bgPixmap.setColor(0, 0, 0.5f, 0.8f); // Biru Gelap Transparan
-        bgPixmap.fill();
-
-        // Tabel untuk Menu Perintah
-        commandTable.setBackground(panelBg); // Set background biru
-
-        // 3. Buat Tombol-Tombol
-        btnAttack = new TextButton("Attack", skin);
-        btnSkill = new TextButton("Skill", skin);
-        btnItem = new TextButton("Item", skin); // Consumable
-        btnDefend = new TextButton("Defend", skin);
-        btnRun = new TextButton("Escape", skin);
-        btnAttack.addListener(new SoundListener());
-        btnSkill.addListener(new SoundListener());
-        btnItem.addListener(new SoundListener());
-        btnDefend.addListener(new SoundListener());
-        btnRun.addListener(new SoundListener());
-        // Atur Listener Tombol
+        // Listener Tombol
         btnAttack.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (currentState == BattleState.PLAYER_TURN) performPlayerTurn(new AttackCommand(hero, enemy));
+            @Override public void clicked(InputEvent event, float x, float y) {
+                if(currentState == BattleState.PLAYER_TURN) performPlayerTurn(new AttackCommand(hero, enemy));
             }
         });
 
         btnDefend.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (currentState == BattleState.PLAYER_TURN) performPlayerTurn(new DefendCommand(hero));
+            @Override public void clicked(InputEvent event, float x, float y) {
+                if(currentState == BattleState.PLAYER_TURN) performPlayerTurn(new DefendCommand(hero));
             }
         });
 
-        btnRun.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (currentState == BattleState.PLAYER_TURN) {
-                    System.out.println("Run Away!");
-                    // Logic keluar screen: game.setScreen(new MainMenuScreen(game));
+        btnEscape.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                if(currentState == BattleState.PLAYER_TURN) {
+                    // Kabur balik ke map
+                    game.setScreen(new com.FEA_3.frontend.Core.WorldMapScreen(game));
                 }
             }
         });
 
-        // 4. Susun Layout Grid (2 Kolom)
-        // Kiri: Attack, Skill, Item. Kanan: Defend, Escape
-        commandTable.add(btnAttack).width(150).pad(5);
-        commandTable.add(btnDefend).width(150).pad(5).row();
+        btnSkill.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                // Hanya bisa klik jika giliran player
+                if(currentState == BattleState.PLAYER_TURN) {
+                    showSkillSelectionDialog();
+                }
+            }
+        });
 
-        commandTable.add(btnSkill).width(150).pad(5);
-        commandTable.add(btnRun).width(150).pad(5).row();
+        // Susun Layout Tombol (Grid 2 Kolom)
+        float btnW = 140;
+        float btnH = 40;
+        commandTable.add(btnAttack).width(btnW).height(btnH).pad(5);
+        commandTable.add(btnDefend).width(btnW).height(btnH).pad(5).row();
+        commandTable.add(btnSkill).width(btnW).height(btnH).pad(5);
+        commandTable.add(btnEscape).width(btnW).height(btnH).pad(5).row();
+        commandTable.add(btnItem).colspan(2).width(btnW).height(btnH).pad(5);
 
-        commandTable.add(btnItem).width(150).pad(5).colspan(2).left(); // Item di bawah
+        // --- 6. GABUNGKAN KE PANEL UTAMA (REVISI) ---
 
-        // Masukkan CommandTable ke MainTable (Tinggi 30% layar)
-        mainTable.add(commandTable).width(w).height(uiPanelHeight);
+        // A. Table Root (Wadah utama fullscreen transparan)
+        Table rootTable = new Table();
+        rootTable.setFillParent(true);
+        rootTable.bottom(); // Isi tabel akan ditaruh di bawah
 
-        stage.addActor(mainTable);
+        // B. Panel Bawah (Wadah khusus UI Biru)
+        Table bottomPanel = new Table();
+
+        // Background Biru HANYA untuk bottomPanel ini
+        Pixmap bgMap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        bgMap.setColor(0, 0, 0.5f, 0.85f);
+        bgMap.fill();
+        bottomPanel.setBackground(new TextureRegionDrawable(new Texture(bgMap)));
+
+        // Masukkan 3 bagian (Kiri, Tengah, Kanan) ke bottomPanel
+        // Gunakan .expandX() agar panel mengisi lebar layar secara merata
+        bottomPanel.add(leftPanel).width(w * 0.3f).height(uiPanelHeight).top().left();
+        bottomPanel.add(commandTable).width(w * 0.4f).height(uiPanelHeight).center();
+        bottomPanel.add(rightPanel).width(w * 0.3f).height(uiPanelHeight).top().right();
+
+        // C. Masukkan bottomPanel ke Root
+        rootTable.add(bottomPanel).width(w).height(uiPanelHeight);
+
+        stage.addActor(rootTable);
     }
 
-    // ... (performPlayerTurn & performEnemyTurn SAMA PERSIS dengan kode lama Anda) ...
-    private void performPlayerTurn(Command playerAction) {
-        // 1. Eksekusi aksi pilihan player (Attack/Defend/dll)
-        playerAction.execute();
 
-        // 2. Cek Win Condition (Jika aksi adalah attack)
-        if (enemy.isDead()) {
-            System.out.println("VICTORY!");
-            currentState = BattleState.VICTORY;
+    private void showSkillSelectionDialog() {
+        Skin skin = ResourceManager.getInstance().getSkin();
 
-            // PANGGIL DIALOG KEMENANGAN
-            showVictoryDialog();
+        // 1. Buat Dialog
+        Dialog skillDialog = new Dialog("Select Skill", skin);
 
-            return; // Stop code, jangan lanjut ke giliran musuh
+        // Tombol Close (X) kecil di pojok (Opsional) atau tombol Cancel di bawah
+
+        Table content = skillDialog.getContentTable();
+        content.pad(10);
+
+        // 2. Ambil Skill Player (yang Aktif saja, Pasif tidak perlu ditampilkan di menu battle)
+        // Kita butuh akses ke list skill hero.
+        // Pastikan GameUnit punya method: public List<Skill> getUnlockedSkills()
+        List<Skill> skills = hero.getUnlockedSkills();
+
+        boolean hasActiveSkill = false;
+
+        for (final com.FEA_3.frontend.Entity.Skill s : skills) {
+            // Filter: Hanya tampilkan Tipe ACTIVE
+            if (s.getType() == com.FEA_3.frontend.Entity.Skill.SkillType.PASSIVE) continue;
+            hasActiveSkill = true;
+            // Cek apakah MP cukup?
+            boolean enoughMp = hero.getStats().getCurrentMp() >= s.getManaCost();
+
+            // Buat Tombol untuk Skill ini
+            String btnText = s.getName() + " (" + s.getManaCost() + " MP)";
+            TextButton skillBtn = new TextButton(btnText, skin);
+
+            if (!enoughMp) {
+                skillBtn.setDisabled(true); // Disable visual
+                skillBtn.setColor(Color.GRAY); // Gelapkan
+            }
+
+            // Listener saat Skill dipilih
+            skillBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (enoughMp) {
+                        usePlayerSkill(s); // Eksekusi Skill
+                        skillDialog.hide(); // Tutup dialog
+                    } else {
+                        System.out.println("Not enough MP!");
+                    }
+                }
+            });
+
+            // Tambahkan ke layout dialog
+            content.add(skillBtn).width(250).height(40).pad(5).row();
         }
 
-        // 3. Ganti Giliran
+        if (!hasActiveSkill) {
+            content.add(new Label("No Active Skills learned yet.", skin)).pad(20);
+        }
+
+        // Tombol Cancel (Batal milih skill)
+        TextButton cancelBtn = new TextButton("Cancel", skin);
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                skillDialog.hide();
+            }
+        });
+        skillDialog.button(cancelBtn);
+
+        skillDialog.show(stage);
+    }
+
+    private void usePlayerSkill(com.FEA_3.frontend.Entity.Skill skill) {
+        // 1. Kurangi MP
+        int manaCost = skill.getManaCost();
+        hero.getStats().consumeMana(manaCost);
+        // Note: Pastikan UnitStats punya method consumeMana,
+        // atau pakai logic: currentMp -= cost;
+
+        // 2. Jalankan Efek Skill
+        // Parameter: user = hero, target = enemy
+        skill.use(hero, enemy);
+
+        // 3. Feedback Visual (Console / Dialog Kecil)
+        System.out.println("Player used " + skill.getName() + "!");
+
+        // Jika skill ini Multi Slice (HP Cost), HP bar juga perlu update
+        // Maka kita panggil refreshStatsUI() untuk update Bar HP & MP
+        refreshStatsUI();
+
+        // 4. Cek apakah musuh mati akibat skill?
+        if (enemy.isDead()) {
+            currentState = BattleState.VICTORY;
+            showVictoryDialog();
+            return;
+        }
+
+        // 5. Oper Giliran ke Musuh
         currentState = BattleState.ENEMY_TURN;
-        btnAttack.setDisabled(true);
-        btnItem.setDisabled(true);
-        btnDefend.setDisabled(true);
-        btnRun.setDisabled(true);
-        btnSkill.setDisabled(true);
-        btnAttack.setText("ENEMY TURN...");
+        commandTable.setVisible(false);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                performEnemyTurn();
+            }
+        }, 1.0f);
+    }
+
+    // Helper bikin tombol biar codingan rapi
+    private TextButton createCommandButton(String text, Skin skin) {
+        TextButton btn = new TextButton(text, skin);
+        btn.addListener(new SoundListener()); // Bunyi klik
+        return btn;
+    }
+
+    // Helper update UI manual (terutama MP yang belum otomatis)
+    private void refreshStatsUI() {
+        UnitStats hs = hero.getStats();
+        UnitStats es = enemy.getStats();
+
+        // HP update via Observer, tapi init awal perlu manual display
+        playerHpWidget.onHealthChanged(hs.getCurrentHp(), hs.getMaxHp());
+        playerMpWidget.updateMp(hs.getCurrentMp(), hs.getMaxMp());
+
+        enemyHpWidget.onHealthChanged(es.getCurrentHp(), es.getMaxHp());
+        enemyMpWidget.updateMp(es.getCurrentMp(), es.getMaxMp());
+    }
+
+    // Panggil ini di awal giliran Player
+    private void startPlayerTurn() {
+        currentState = BattleState.PLAYER_TURN;
+        commandTable.setVisible(true);
+
+        // 1. Apply Efek (Burn/Bleed damage kena disini)
+        hero.applyTurnEffects();
+
+        // 2. Cek Death akibat Burn/Bleed
+        if (hero.isDead()) {
+            // Game Over Logic
+            return;
+        }
+
+        // 3. Cek STUN
+        if (hero.isStunned()) {
+            System.out.println("Player is STUNNED! Skipping turn...");
+            hero.setStunned(false); // Reset stun
+            // Skip langsung ke musuh
+            Timer.schedule(new Timer.Task() {
+                @Override public void run() { performEnemyTurn(); }
+            }, 1.0f);
+        }
+    }
+
+    private void performPlayerTurn(Command playerAction) {
+        startPlayerTurn();
+        playerAction.execute();
+
+        // Update MP bar manual jika aksi menggunakan MP (nanti)
+        refreshStatsUI();
+
+        if (enemy.isDead()) {
+            currentState = BattleState.VICTORY;
+            showVictoryDialog();
+            return;
+        }
+
+        currentState = BattleState.ENEMY_TURN;
+
+        // Disable tombol saat giliran musuh
+        commandTable.setVisible(false); // Atau setTouchable(Disabled)
 
         Timer.schedule(new Timer.Task() {
             @Override
@@ -327,88 +400,163 @@ public class BattleScreen implements Screen {
     }
 
     private void performEnemyTurn() {
-        enemy.act(hero);
+        // 1. Apply Efek Musuh (Burn/Bleed)
+        enemy.applyTurnEffects();
 
-        if (hero.isDead()) {
-            System.out.println("GAME OVER");
-            currentState = BattleState.DEFEAT;
+        if (enemy.isDead()) {
+            currentState = BattleState.VICTORY;
+            showVictoryDialog();
             return;
         }
 
-        currentState = BattleState.PLAYER_TURN;
-        btnAttack.setDisabled(false);
-        btnItem.setDisabled(false);
-        btnDefend.setDisabled(false);
-        btnRun.setDisabled(false);
-        btnSkill.setDisabled(false);
-        btnAttack.setText("ATTACK TURN");
+        // 2. Cek STUN Musuh
+        if (enemy.isStunned()) {
+            System.out.println("Enemy is STUNNED! Skipping turn...");
+            enemy.setStunned(false);
+            currentState = BattleState.PLAYER_TURN;
+            commandTable.setVisible(true); // Balik ke player
+            return;
+        }
+
+        // 3. Musuh Menyerang (Jika tidak stun)
+        enemy.act(hero);
+
+        if (hero.isDead()) { /* Game Over */ return; }
+
+        // Selesai giliran musuh, balik ke player
+        startPlayerTurn();
+    }
+
+    // ... method showVictoryDialog sama seperti sebelumnya ...
+    private void showVictoryDialog() {
+        hero.getStats().addManaCrystals(enemy.getStats().getCrystalReward());
+        hero.getStats().addExp(enemy.getStats().getExpReward());
+        int expGained = enemy.getStats().getExpReward();
+        int crystalGained = enemy.getStats().getCrystalReward();
+
+        // Update Stats Player di Global State
+        hero.getStats().addExp(expGained);
+        hero.getStats().addManaCrystals(crystalGained);
+
+        // --- TAMBAHAN BARU: AUTO SAVE ---
+        System.out.println("Saving Game...");
+        // Gunakan ID "User1" dulu untuk testing. Nanti bisa dinamis dari Login screen.
+        com.FEA_3.frontend.Utils.NetworkManager.getInstance()
+            .savePlayer("User1", hero.getStats());
+        // -------------------------------
+
+        Dialog winDialog = new Dialog("VICTORY!", ResourceManager.getInstance().getSkin()) {
+            @Override
+            protected void result(Object object) {
+                if (onVictoryAction != null) onVictoryAction.run();
+            }
+        };
+        // ... text dialog ...
+        winDialog.text("You defeated " + enemy.getStats().getName() + "!\n" +
+            "Gained " + expGained + " EXP\n" +
+            "Found " + crystalGained + " Crystals\n\n" +
+            "[Game Saved]"); // Beri tahu player game tersimpan
+
+        winDialog.button("Continue", true);
+        winDialog.show(stage);
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // LOGIC KHUSUS SAAT LOADING
-        if (isLoading) {
-            stage.act(delta);
-            stage.draw(); // Hanya gambar tulisan "Connecting..."
-            return;       // STOP DISINI, jangan gambar unit dulu (karena 'hero' masih null)
-        }
+        // --- TAMBAHAN PENTING: UPDATE LOGIC UNIT ---
+        if (hero != null) hero.update(delta);
+        if (enemy != null) enemy.update(delta);
+        // -------------------------------------------
 
-        // --- GAMEPLAY NORMAL ---
-        hero.update(delta);
-        enemy.update(delta);
+        stage.getBatch().begin();
 
-        stage.act(delta);
+        // 1. Draw Background
+        if(backgroundTexture != null)
+            stage.getBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        batch.begin();
-        // Gambar Background Layar (Hutan/dll)
-        if (backgroundTexture != null) {
-            batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        }
+        // 2. Draw Units (Animasi akan jalan karena timer sudah di-update)
+        drawUnit(stage.getBatch(), heroImg, heroX, heroY, hero);
+        drawUnit(stage.getBatch(), enemyImg, enemyX, enemyY, enemy);
 
-        // Gambar Unit di posisi yang sudah diupdate
-        if (hero != null) drawUnit(hero, heroImg, heroX, heroY);
-        if (enemy != null) drawUnit(enemy, enemyImg, enemyX, enemyY);
-        batch.end();
+        stage.getBatch().end();
 
         stage.act(delta);
         stage.draw();
     }
 
-    // ... (drawUnit, dispose, dll SAMA PERSIS dengan kode lama Anda) ...
-    private void drawUnit(GameUnit unit, Texture tex, float originalX, float originalY) {
-        // Copy-paste method drawUnit Anda yang lama disini
-        // ...
-        float drawX = originalX;
-        float drawY = originalY;
+    // Helper draw unit dengan Animasi
+    private void drawUnit(com.badlogic.gdx.graphics.g2d.Batch batch, Texture tex, float baseX, float baseY, GameUnit unit) {
+        float drawX = baseX;
+        float drawY = baseY;
 
-        if (unit.getState() == com.FEA_3.frontend.Core.UnitState.ATTACK) {
-            if (originalX < Gdx.graphics.getWidth() / 2) drawX += 50;
-            else drawX -= 50;
-        } else if (unit.getState() == com.FEA_3.frontend.Core.UnitState.HURT) {
-            batch.setColor(1, 0, 0, 1);
-            drawX += (Math.random() * 10) - 5;
-            drawY += (Math.random() * 10) - 5;
+        // Reset warna batch ke putih (normal) dulu
+        batch.setColor(Color.WHITE);
+
+        // --- LOGIC ANIMASI BERDASARKAN STATE ---
+        // Asumsi: Anda punya method unit.getState() dan unit.getStateTimer() di GameUnit
+        // Jika belum ada getter-nya, tambahkan: public UnitState getState() { return state; } di GameUnit
+
+        switch (unit.getState()) {
+            case ATTACK:
+                // Gunakan Sine wave setengah putaran (0 sampai PI)
+                // Timer 0.0s -> 0.5s akan dipetakan menjadi gerakan maju mundur
+                float progress = Math.min(1.0f, unit.getStateTimer() / 0.5f); // 0 sampai 1
+
+                // Rumus: Maju (0->50) lalu Mundur (50->0)
+                float attackOffset = 100f * (float)Math.sin(progress * Math.PI);
+
+                boolean isPlayer = (unit == hero);
+                drawX += isPlayer ? attackOffset : -attackOffset;
+                break;
+
+            case HURT:
+                // Efek Berkedip Merah
+                // Jika waktu genap merah, ganjil putih (efek kedip cepat)
+                if ((int)(unit.getStateTimer() * 20) % 2 == 0) {
+                    batch.setColor(Color.RED);
+                } else {
+                    batch.setColor(Color.WHITE);
+                }
+
+                // Efek Getar (Shake)
+                drawX += Math.random() * 10 - 5;
+                break;
+
+            case DEAD:
+                batch.setColor(Color.GRAY); // Jadi abu-abu
+                drawY -= 10; // Sedikit tenggelam/jatuh
+                break;
+
+            case DEFEND:
+                batch.setColor(Color.CYAN); // Sedikit biru tanda bertahan
+                break;
         }
 
-        batch.draw(tex, drawX, drawY, 150, 150);
-        batch.setColor(1, 1, 1, 1);
+        // Gambar texture
+        // Pastikan arah hadap (Flip) benar. Player hadap kanan (default), Musuh hadap kiri.
+        boolean flipX = (unit == enemy);
+
+        batch.draw(tex,
+            drawX, drawY,           // Posisi
+            100, 100,               // Origin (Pusat putar, opsional)
+            200, 200,               // Ukuran lebar x tinggi
+            1, 1,                   // Scale
+            0,                      // Rotasi
+            0, 0,                   // SrcX, SrcY
+            tex.getWidth(), tex.getHeight(), // SrcWidth, SrcHeight
+            flipX, false            // FlipX (Musuh dibalik), FlipY
+        );
+
+        // Kembalikan warna batch ke normal agar UI tidak ikut merah
+        batch.setColor(Color.WHITE);
     }
 
-    @Override public void dispose() {
-        batch.dispose();
-        stage.dispose();
-        ResourceManager.getInstance().dispose();
-    }
-    @Override public void show() {
-        if (bgm != null) bgm.play();
-    }
+    @Override public void dispose() { stage.dispose(); }
+    @Override public void show() {}
     @Override public void resize(int w, int h) { stage.getViewport().update(w, h, true); }
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() {
-        if (bgm != null) bgm.stop();
-    }
+    @Override public void hide() {bgm.stop();}
 }
