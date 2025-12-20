@@ -2,6 +2,7 @@ package com.FEA_3.frontend.Utils;
 
 import com.FEA_3.frontend.Entity.GameUnit;
 import com.FEA_3.frontend.Entity.Skill;
+import com.badlogic.gdx.audio.Sound;
 
 public class SkillDatabase {
 
@@ -13,6 +14,7 @@ public class SkillDatabase {
         // --- 1. DIVINE LIGHT (Support) ---
         hero.addSkill(new Skill("Divine Light", "Heal 15% HP & lower enemy accuracy.", "Icons/DivineLight.png",
             2, 20, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Divine Light.mp3").play();
             int healAmount = (int) (user.getStats().getMaxHp() * 0.15);
             int newHp = user.getStats().getCurrentHp() + healAmount;
             if(newHp > user.getStats().getMaxHp()) newHp = user.getStats().getMaxHp();
@@ -25,6 +27,7 @@ public class SkillDatabase {
         // --- 2. FIREBALL (Early Magic) ---
         hero.addSkill(new Skill("Fireball", "Deals fire dmg & inflicts burn.", "Icons/Fireball.png",
             3, 15, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Fireball.mp3").play();
             int dmg = (int) (user.getStats().getAttackPower() * 1.2);
             target.takeDamage(dmg, false);
             target.setBurn(3);
@@ -33,6 +36,7 @@ public class SkillDatabase {
         // --- 3. FIRESTORM (AOE Magic) ---
         hero.addSkill(new Skill("Firestorm", "High fire dmg to all & burn.", "Icons/Firestorm.png",
             12, 50, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Firestorm.mp3").play();
             int dmg = (int) (user.getStats().getAttackPower() * 2.5);
             target.takeDamage(dmg, false);
             target.setBurn(3);
@@ -41,6 +45,7 @@ public class SkillDatabase {
         // --- 4. FREEZING TOUCH (Control) ---
         hero.addSkill(new Skill("Freezing Touch", "Ice dmg & freezes enemy (Skip Turn).", "Icons/IceTouch.png",
             5, 30, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Freezing Touch.mp3").play();
             int dmg = (int) (user.getStats().getAttackPower() * 1.5);
             target.takeDamage(dmg, false);
             target.setStunned(true);
@@ -49,6 +54,32 @@ public class SkillDatabase {
         // --- 5. BLIZZARD (AOE Control) ---
         hero.addSkill(new Skill("Blizzard", "Massive ice dmg & slow.", "Icons/Blizzard.png",
             15, 60, Skill.SkillType.ACTIVE, (user, target) -> {
+            Sound blizzardSfx = ResourceManager.getInstance().getSound("Audio/Sound_Effect/Blizzard (Harus diperpendek).mp3");
+            long id = blizzardSfx.play(0.1f); // Mulai dari volume rendah (Fade In awal)
+
+            // --- Simulasi Fade In ---
+            for(float i = 0.2f; i <= 1.0f; i += 0.2f) {
+                final float vol = i;
+                com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                    @Override public void run() { blizzardSfx.setVolume(id, vol); }
+                }, vol * 0.5f); // Naik bertahap setiap 0.5 detik
+            }
+
+            // --- Simulasi Fade Out (setelah 3 detik suara berjalan) ---
+            com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                @Override
+                public void run() {
+                    for(int j = 0; j < 10; j++) {
+                        final float fadeVol = 1.0f - (j * 0.1f);
+                        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+                            @Override public void run() {
+                                blizzardSfx.setVolume(id, fadeVol);
+                                if(fadeVol <= 0.1f) blizzardSfx.stop(id); // Stop saat sudah sunyi
+                            }
+                        }, j * 0.1f);
+                    }
+                }
+            }, 3.0f);
             int dmg = (int) (user.getStats().getAttackPower() * 2.2);
             target.takeDamage(dmg, false);
             target.setSlowDebuff(3);
@@ -57,6 +88,7 @@ public class SkillDatabase {
         // --- 6. BUCKLE UP (Defense Buff) ---
         hero.addSkill(new Skill("Buckle Up", "Reduce dmg taken by 45%.", "Icons/ShieldBuff.png",
             4, 25, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Buckle Up (maybe).mp3").play();
             user.setDefenseBuff(2);
             System.out.println("Defense Up!");
         }));
@@ -70,18 +102,22 @@ public class SkillDatabase {
         // --- 8. DODGE (Speed Buff) ---
         hero.addSkill(new Skill("Dodge", "Increase speed for this turn.", "Icons/Dodge.png",
             2, 10, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Dodge.mp3").play();
             user.setSpeedBuff(1);
         }));
 
         // --- 9. VISUAL CALCULUS (Sure Hit) ---
         hero.addSkill(new Skill("Visual Calculus", "Next attack will surely hit.", "Icons/Eye.png",
             7, 35, Skill.SkillType.ACTIVE, (user, target) -> {
+            ResourceManager.getInstance().getSound("Audio/Sound_Effect/Visual Calculus.mp3").play();
             user.setNextHitGuaranteed(true);
         }));
 
         // --- 10. MULTI SLICE (HP Cost) ---
         hero.addSkill(new Skill("Multi Slice", "Costs HP. 3x Hits & Bleed.", "Icons/MultiSlice.png",
             6, 0, Skill.SkillType.ACTIVE, (user, target) -> {
+            Sound sliceSfx = ResourceManager.getInstance().getSound("Audio/Sound_Effect/Multi Slice (Efek hanya satu slice).mp3");
+            sliceSfx.play();
             // Cost 50 HP
             user.takeDamage(50, false);
 

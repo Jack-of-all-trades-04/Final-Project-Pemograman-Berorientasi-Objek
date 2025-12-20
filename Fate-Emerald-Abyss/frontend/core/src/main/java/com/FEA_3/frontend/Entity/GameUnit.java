@@ -4,6 +4,7 @@ import com.FEA_3.frontend.Core.UnitState;
 import com.FEA_3.frontend.Patterns.Command.Command;
 import com.FEA_3.frontend.Patterns.Observer.UnitObserver;
 import com.FEA_3.frontend.Patterns.Strategy.BattleStrategy;
+import com.FEA_3.frontend.Utils.ResourceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -200,6 +201,7 @@ public class GameUnit {
         if (newHp <= 0 && hasEndure) {
             newHp = 1; // Bertahan hidup dengan 1 HP
             hasEndure = false; // Hanya sekali per battle (atau reset logic lain)
+            ResourceManager.getInstance().getSound("Sound_Effects/Endure(also maybe).mp3").play();
             System.out.println(stats.getName() + " ENDURED the attack!");
         } else if (newHp < 0) {
             newHp = 0;

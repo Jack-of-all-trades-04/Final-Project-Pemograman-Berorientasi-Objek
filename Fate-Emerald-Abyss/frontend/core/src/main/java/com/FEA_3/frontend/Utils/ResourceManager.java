@@ -29,6 +29,16 @@ public class ResourceManager {
         assetManager.load("Audio/Sound_Effect/ui_click1.wav", Sound.class);
         assetManager.load("Audio/Sound_Effect/ui_hover1.wav", Sound.class);
         assetManager.load("Audio/Sound_Effect/Attack1.wav", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Fireball.mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Firestorm.mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Blizzard (Harus diperpendek).mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Freezing Touch.mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Buckle Up (maybe).mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Dodge.mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Visual Calculus.mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Multi Slice (Efek hanya satu slice).mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Divine Light.mp3", Sound.class);
+        assetManager.load("Audio/Sound_Effect/Endure(also maybe).mp3", Sound.class);
 
         // Load Karakter
         assetManager.load("Entity/Player/Temp.png", Texture.class);
