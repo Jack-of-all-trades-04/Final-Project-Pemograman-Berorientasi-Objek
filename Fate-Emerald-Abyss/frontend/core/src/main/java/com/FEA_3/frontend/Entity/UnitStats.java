@@ -1,5 +1,8 @@
 package com.FEA_3.frontend.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UnitStats {
     private String name;
 
@@ -24,6 +27,9 @@ public class UnitStats {
     private int currentExp;
     private int maxExp;
     private int manaCrystals;
+
+    // --- INVENTORY ---
+    private List<Consumable> inventory;
 
     // --- REWARDS ---
     private int expReward;
@@ -50,6 +56,64 @@ public class UnitStats {
 
         this.currentExp = 0;
         this.maxExp = 100;
+
+        this.inventory = new ArrayList<>();
+    }
+
+    // --- INVENTORY LOGIC ---
+    public List<Consumable> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(List<Consumable> inventory) {
+        this.inventory = inventory;
+    }
+
+    /**
+     * Method 1: Dipakai ShopScreen (Deteksi Otomatis)
+     * Menambahkan item ke inventory. Jika ada, tambah quantity.
+     */
+    public void addItem(String itemName, int quantity) {
+        // 1. Cek Stack: Jika item sudah ada, cukup tambah jumlahnya
+        for (Consumable item : inventory) {
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                item.addQuantity(quantity);
+                System.out.println("Inventory: " + itemName + " quantity updated to " + item.getQuantity());
+                return;
+            }
+        }
+
+        // 2. Jika item baru, deteksi tipe manual (Simple Logic)
+        Consumable.ItemType type = Consumable.ItemType.POTION_HP; // Default
+        int value = 0;
+
+        if (itemName.contains("Health") || itemName.contains("HP")) {
+            type = Consumable.ItemType.POTION_HP;
+            value = 50;
+        } else if (itemName.contains("Mana") || itemName.contains("MP")) {
+            type = Consumable.ItemType.POTION_MP;
+            value = 30;
+        } else if (itemName.contains("Iron") || itemName.contains("Elixir") || itemName.contains("DEF")) {
+            type = Consumable.ItemType.BUFF_DEF;
+            value = 30;
+        }
+
+        inventory.add(new Consumable(itemName, type, value, quantity));
+        System.out.println("Inventory: Added new item " + itemName);
+    }
+
+    /**
+     * Method 2: Dipakai NetworkManager (Load Data Server)
+     * Menambah item dengan data lengkap.
+     */
+    public void addItem(String name, Consumable.ItemType type, int value, int qty) {
+        for (Consumable item : inventory) {
+            if (item.getName().equalsIgnoreCase(name)) {
+                item.addQuantity(qty);
+                return;
+            }
+        }
+        inventory.add(new Consumable(name, type, value, qty));
     }
 
     // --- LOGIC LEVEL UP & SCALING ---
@@ -93,6 +157,8 @@ public class UnitStats {
         }
         return false;
     }
+
+    //
 
     // --- GETTERS & SETTERS (Generate All) ---
     public int getLevel() { return level; }
@@ -194,5 +260,6 @@ public class UnitStats {
     public void addManaCrystals(int amount) {
         this.manaCrystals += amount;
     }
+
     // ... Buat setter lain jika perlu
 }

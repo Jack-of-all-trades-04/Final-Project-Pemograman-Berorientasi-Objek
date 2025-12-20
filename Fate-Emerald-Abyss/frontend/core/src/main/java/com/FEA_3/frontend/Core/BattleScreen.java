@@ -1,5 +1,6 @@
 package com.FEA_3.frontend.Core;
 
+import com.FEA_3.frontend.Entity.Consumable;
 import com.FEA_3.frontend.Entity.GameUnit;
 import com.FEA_3.frontend.Entity.Skill;
 import com.FEA_3.frontend.Entity.UnitStats;
@@ -185,6 +186,15 @@ public class BattleScreen implements Screen {
             }
         });
 
+        btnItem.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (currentState == BattleState.PLAYER_TURN) {
+                    showItemSelectionDialog();
+                }
+            }
+        });
+
         // Susun Layout Tombol (Grid 2 Kolom)
         float btnW = 140;
         float btnH = 40;
@@ -328,6 +338,75 @@ public class BattleScreen implements Screen {
         }, 1.0f);
     }
 
+    private void showItemSelectionDialog() {
+        Skin skin = ResourceManager.getInstance().getSkin();
+        Dialog itemDialog = new Dialog("Select Item", skin);
+        Table content = itemDialog.getContentTable();
+        content.pad(10);
+
+        // Ambil inventory dari stats
+        List<Consumable> inventory = hero.getStats().getInventory();
+        boolean hasItem = false;
+
+        if (inventory != null) {
+            for (final Consumable item : inventory) {
+                // Hanya tampilkan item yang jumlahnya > 0
+                if (item.getQuantity() > 0) {
+                    hasItem = true;
+                    // Teks tombol: "Health Potion (x3)"
+                    String btnText = item.getName() + " (x" + item.getQuantity() + ")";
+                    TextButton itemBtn = new TextButton(btnText, skin);
+
+                    itemBtn.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            usePlayerItem(item); // Gunakan Item
+                            itemDialog.hide();   // Tutup Dialog
+                        }
+                    });
+                    content.add(itemBtn).width(250).height(40).pad(5).row();
+                }
+            }
+        }
+
+        if (!hasItem) {
+            content.add(new Label("Inventory Empty.", skin)).pad(20);
+        }
+
+        // Tombol Cancel
+        TextButton cancelBtn = new TextButton("Cancel", skin);
+        cancelBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                itemDialog.hide();
+            }
+        });
+        itemDialog.button(cancelBtn);
+        itemDialog.show(stage);
+    }
+
+    private void usePlayerItem(Consumable item) {
+        // 1. Gunakan Item (Logic use ada di class Consumable)
+        // Item otomatis mengurangi quantity di dalamnya
+        item.use(hero);
+
+        System.out.println("Player used " + item.getName() + "!");
+
+        // 2. Refresh UI (HP/MP mungkin berubah)
+        refreshStatsUI();
+
+        // 3. Menggunakan item menghabiskan giliran -> Oper ke Musuh
+        currentState = BattleState.ENEMY_TURN;
+        commandTable.setVisible(false);
+
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                performEnemyTurn();
+            }
+        }, 1.0f);
+    }
+
     // Helper bikin tombol biar codingan rapi
     private TextButton createCommandButton(String text, Skin skin) {
         TextButton btn = new TextButton(text, skin);
@@ -433,10 +512,6 @@ public class BattleScreen implements Screen {
         hero.getStats().addExp(enemy.getStats().getExpReward());
         int expGained = enemy.getStats().getExpReward();
         int crystalGained = enemy.getStats().getCrystalReward();
-
-        // Update Stats Player di Global State
-        hero.getStats().addExp(expGained);
-        hero.getStats().addManaCrystals(crystalGained);
 
         // --- TAMBAHAN BARU: AUTO SAVE ---
         System.out.println("Saving Game...");

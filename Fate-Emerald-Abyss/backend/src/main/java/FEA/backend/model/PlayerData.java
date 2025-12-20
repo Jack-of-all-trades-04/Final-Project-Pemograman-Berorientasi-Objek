@@ -1,8 +1,9 @@
 package FEA.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "players")
@@ -35,6 +36,9 @@ public class PlayerData {
     private float critDamage; // NEW
     private float accuracy;   // NEW
 
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InventoryItem> inventoryItems = new ArrayList<>();
+
     // Constructor Kosong (Wajib JPA)
     public PlayerData() {}
 
@@ -47,7 +51,7 @@ public class PlayerData {
         this.level = 1;
         this.currentExp = 0;
         this.maxExp = 100;
-        this.manaCrystals = 0;
+        this.manaCrystals = 500; // Testing
 
         this.maxHp = 1000;
         this.currentHp = 1000;
@@ -172,4 +176,20 @@ public class PlayerData {
         this.accuracy = accuracy;
     }
     // ... dst (Jangan lupa getter setter sisanya)
+
+    // Inventory
+
+    public List<InventoryItem> getInventoryItems() {
+        return inventoryItems;
+    }
+
+    public void setInventoryItems(List<InventoryItem> inventoryItems) {
+        this.inventoryItems = inventoryItems;
+        // Helper: Pastikan setiap item tahu siapa pemiliknya
+        if (inventoryItems != null) {
+            for (InventoryItem item : inventoryItems) {
+                item.setPlayer(this);
+            }
+        }
+    }
 }
