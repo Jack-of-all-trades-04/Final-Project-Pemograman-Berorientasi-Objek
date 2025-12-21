@@ -9,6 +9,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class ResourceManager {
     public static final ResourceManager instance = new ResourceManager();
     private AssetManager assetManager;
+    private Music currentMusic;
+    private float sfxVolume = 1.0f; // Default
+
+    public void playMusic(String path, float globalVolume) {
+        // Stop musik lama jika ada
+        if (currentMusic != null) {
+            currentMusic.stop();
+        }
+
+        currentMusic = getMusic(path);
+        if (currentMusic != null) {
+            currentMusic.setVolume(globalVolume); // Set volume sesuai Setting
+            currentMusic.setLooping(true);
+            currentMusic.play();
+        }
+    }
 
     private ResourceManager() {
         assetManager = new AssetManager();
@@ -98,5 +114,20 @@ public class ResourceManager {
             assetManager.finishLoading();
         }
         return assetManager.get(path, Sound.class);
+    }
+    // Method untuk update volume secara realtime (Dipakai di SettingsScreen)
+    public void setGlobalMusicVolume(float volume) {
+        if (currentMusic != null && currentMusic.isPlaying()) {
+            currentMusic.setVolume(volume);
+        }
+    }
+
+    // Setter Getter untuk SFX Volume (Dipakai SoundListener)
+    public void setGlobalSfxVolume(float volume) {
+        this.sfxVolume = volume;
+    }
+
+    public float getGlobalSfxVolume() {
+        return this.sfxVolume;
     }
 }

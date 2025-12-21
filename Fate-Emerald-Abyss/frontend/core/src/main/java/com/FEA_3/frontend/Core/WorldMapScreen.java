@@ -384,7 +384,10 @@ public class WorldMapScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         if (bgm != null && !bgm.isPlaying()) {
-            bgm.play();
+            ResourceManager.getInstance().playMusic(
+                "Soundtrack/WorldMap.mp3",
+                game.settings.getBgmVolume()
+            );
         }
 
         // LOAD ULANG DATA DARI SERVER (Agar Uang Sinkron setelah dari Shop)

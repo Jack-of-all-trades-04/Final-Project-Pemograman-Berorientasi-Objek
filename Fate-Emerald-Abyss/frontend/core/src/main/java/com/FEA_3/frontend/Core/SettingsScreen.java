@@ -21,13 +21,11 @@ public class SettingsScreen implements Screen {
     private final Main game;
     private final Screen returnScreen;
     private final Stage stage;
-    private final Preferences prefs;
 
     public SettingsScreen(Main game, Screen returnScreen) {
         this.game = game;
         this.returnScreen = returnScreen;
         this.stage = new Stage(new ScreenViewport());
-        this.prefs = Gdx.app.getPreferences("audioPrefs");
         Gdx.input.setInputProcessor(stage);
         buildUI();
     }
@@ -41,24 +39,38 @@ public class SettingsScreen implements Screen {
         Label title = new Label("Settings", skin);
         title.setFontScale(1.2f);
 
+        // --- BGM SLIDER ---
         Slider bgmSlider = new Slider(0f, 1f, 0.05f, false, skin);
-        bgmSlider.setValue(prefs.getFloat("bgmVolume", 1f));
+        // Ambil nilai awal dari Global Settings
+        bgmSlider.setValue(game.settings.getBgmVolume());
+
         bgmSlider.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
                 float v = bgmSlider.getValue();
-                prefs.putFloat("bgmVolume", v).flush();
-                Music bgm = ResourceManager.getInstance().getMusic("Soundtrack/MainMenu.mp3");
-                if (bgm != null) bgm.setVolume(v);
+
+                // 1. Update Global Settings Object
+                game.settings.setBgmVolume(v);
+
+                // 2. Simpan ke File (Lewat Manager agar konsisten "FEA_Settings")
+                SettingsManager.save(game.settings);
+
+                // 3. Update Musik yang SEDANG main sekarang (Realtime)
+                ResourceManager.getInstance().setGlobalMusicVolume(v);
             }
         });
 
+        // --- SFX SLIDER ---
         Slider sfxSlider = new Slider(0f, 1f, 0.05f, false, skin);
-        sfxSlider.setValue(prefs.getFloat("sfxVolume", 1f));
+        sfxSlider.setValue(game.settings.getSfxVolume());
+
         sfxSlider.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
                 float v = sfxSlider.getValue();
-                prefs.putFloat("sfxVolume", v).flush();
-                Gdx.app.log("Settings", "SFX volume set to " + v);
+                game.settings.setSfxVolume(v);
+                SettingsManager.save(game.settings);
+
+                // TAMBAHAN: Update ResourceManager agar SoundListener tahu volume baru
+                ResourceManager.getInstance().setGlobalSfxVolume(v);
             }
         });
 

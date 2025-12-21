@@ -159,7 +159,7 @@ public class NarrativeScreen implements Screen {
             line("..."),
             line("Librarian: 'Hey, WAKE UP, do you know it is prohibited to sleep in library?'")
                 .setBackground("Background/Library.jpg")
-                .setSoundEffect("SFX/TableSlam.mp3"),
+                .setSoundEffect("Audio/Sound_Effect/TableSlam.mp3"),
             line("MC: 'Alright-alright, I will wake up, jeez, do you know that there is a rule to not shouting in library?'")
                 .setSoundtrack("Soundtrack/Library.mp3"),
             line("Librarian: 'It is an exception, sacrificing a little stability to prevent greater chaos is acceptable'"),
@@ -176,7 +176,7 @@ public class NarrativeScreen implements Screen {
             line("There is sentence that's just lingering in my mind recently"),
             line("'Leaver dea as slaef.'")
                 .setBackground("Background/BookPage.jpeg")
-                .setSoundEffect("SFX/BookOpening.mp3"),
+                .setSoundEffect("Audio/Sound_Effect/BookOpening.mp3"),
             line("It is a quote from a history book I read, English-wise it means 'it is better to die instead of being a slave'"),
             line("What does it mean by slave?"),
             line("MC: 'Hey, do you know the meaning of this part of sentence?'")
@@ -198,7 +198,7 @@ public class NarrativeScreen implements Screen {
             line("It appears to be a suspicious guy using a strange suit..."),
             line("This guy suddenly just threw a knife at me."),
             line("MC : 'Wha??'")
-                .setSoundEffect("SFX/KnifeThrowing.mp3"),
+                .setSoundEffect("Audio/Sound_Effect/KnifeThrowing.mp3"),
             line("I just happened to evade the attack by using my body strengthening,"),
             line("Let's evaluate this situation, their speed is terrifying, I hardly see the knife. My last evasion is also really lucky."),
             line("I really need to get out of here quickly, it is an opponent that i can't face directly."),
@@ -246,7 +246,7 @@ public class NarrativeScreen implements Screen {
                 .setBackground("Background/Shrine.jpeg")
                 .setSoundtrack("Soundtrack/Mystical.mp3"),
             line("Sparking...")
-                .setSoundEffect("SFX/Spark.mp3"),
+                .setSoundEffect("Audio/Sound_Effect/Spark.mp3"),
             line("???: 'So, you have summoned me huh? I guess you are my master'"),
             line("Charlotte: 'I see, analyzing into your pattern of magical energy and origin, can I conclude that you are Rider?'"),
             line("Charlotte: 'No, your origin name is Prabu Siliwangi right?'"),
@@ -318,7 +318,7 @@ public class NarrativeScreen implements Screen {
             line("Sultan: 'Intruders... drown them all.'"),
             line("Rider: 'The Queen of the South. I shall handle thi-"),
             line("BOOOM!! Before Rider could move, a blue flash of lightning struck Caster from the sky. The Queen was vaporized instantly.")
-                .setSoundEffect("SFX/ThunderExplosion.mp3"),
+                .setSoundEffect("Audio/Sound_Effect/ThunderExplosion.mp3"),
             line("We look up to the cliff. Fiona and Archer are standing there"),
             line("Fiona: 'Target neutralized. Efficient, isn't it?'"),
             line("MC: 'You..'"),
@@ -329,7 +329,9 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterFourScript() {
         return new StoryStep[]{
-            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united."),
+            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united.")
+                .setBackground("Background/Aliz Ruins.png")
+                .setSoundtrack("Soundtrack/WorldMap.mp3"),
             line("Fiona: 'Raja Jawa is in the Floating Fortress. Here is the plan.'"),
             line("Fiona: 'Rider will use his Noble Phantasm to breach the main gate. Saber and Lancer will handle the guards. Archer will provide long-range support.'"),
             line("Rider: 'A sound plan. My chariot shall crush their defenses.'"),
@@ -338,7 +340,8 @@ public class NarrativeScreen implements Screen {
                 .setSoundtrack("STOP"),
             line("Assassin: 'My, my~ A full course meal served on a silver platter.'")
                 .setBattle(EnemyType.ASSASSIN,"Background/Aliz Ruins.png"),
-            line("Raja Jawa (Voice): 'Disappointing. Burn.'"),
+            line("Raja Jawa (Voice): 'Disappointing. Burn.'")
+                .setSoundtrack("Soundtrack/Decisions.mp3"),
             line("The sky turns red. The orbital bombardment begins."),
             line("The beam falls. We have no time to run."),
             line("Archer: 'Pashupata!!'"),
@@ -358,9 +361,10 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterFinalScript() {
         return new StoryStep[]{
-            line("Ini chapter final atau 5"),
-            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits."),
-            line("Raja Jawa: 'Welcome. You are the last obstacle.'"),
+            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits.")
+                .setBackground("Background/Castle.jpeg"),
+            line("Raja Jawa: 'Welcome. You are the last obstacle.'")
+                .setSoundtrack("Soundtrack/Ominous.mp3"),
             line("MC: 'You are the one behind this... the one who wants to unify the world?'"),
             line("Raja Jawa: 'Correct. Look at the tragedy below. Suffering caused by 'Choice'. By 'Ambition'.'"),
             line("Raja Jawa: 'I will use the Grail to strip humanity of that burden. No more choice. No more pain. Everyone will be safe under my rule.'"),
@@ -374,7 +378,7 @@ public class NarrativeScreen implements Screen {
             line("MC: 'I would rather die as a free man than live as your safe slave! Leaver dea as slaef!'"),
             line("Raja Jawa: 'Foolish. Tlaloc... Destroy them.'"),
             line("Tlaloc: 'Alright'")
-                .setBattle(EnemyType.PRETENDER, "Background/Library.jpg"),
+                .setBattle(EnemyType.PRETENDER, "Background/Castle.jpeg"),
             line("The castle is crumbling. Saber is kneeling, his great sword shattered. Pretender stands tall, barely scratched. The difference in power was absolute."),
             line("Saber: 'Hah... Hah... I can't... cut through... that armor...'"),
             line("Raja Jawa: 'See? Willpower means nothing before absolute power.'"),
@@ -406,6 +410,8 @@ public class NarrativeScreen implements Screen {
             line("She smiles. A genuine, big smile."),
             line("Saber: 'That is enough, Mike. That is enough.'"),
             line("'Leaver dea as slaef'. I chose to live. And I am free.")
+                .setBackground("Background/Blackscreen.jpg"),
+            line("THE END")
         };
     }
 
@@ -545,21 +551,19 @@ public class NarrativeScreen implements Screen {
             currentSoundtrackPath = "STOP"; // Menandai bahwa status sekarang adalah hening
         }
         else if (currentStep.soundtrackPath != null && !currentStep.soundtrackPath.equals(currentSoundtrackPath)) {
-            if (currentSoundtrack != null) currentSoundtrack.stop();
-
-            currentSoundtrack = ResourceManager.getInstance().getMusic(currentStep.soundtrackPath);
+            // Gunakan Helper baru di ResourceManager agar lebih rapi
+            // Parameter ke-2 adalah Volume dari Global Settings
+            ResourceManager.getInstance().playMusic(
+                currentStep.soundtrackPath,
+                game.settings.getBgmVolume()
+            );
             currentSoundtrackPath = currentStep.soundtrackPath;
-
-            if (currentSoundtrack != null) {
-                currentSoundtrack.setLooping(true);
-                currentSoundtrack.setVolume(0.5f);
-                currentSoundtrack.play();
-            }
         }
 
         if (currentStep.sfxPath != null) {
             Sound sfx = ResourceManager.getInstance().getSound(currentStep.sfxPath);
-            sfx.play(1.0f); // Volume penuh
+            // Mainkan dengan Volume dari Global Settings
+            sfx.play(game.settings.getSfxVolume());
         }
 
         String line = currentStep.text;

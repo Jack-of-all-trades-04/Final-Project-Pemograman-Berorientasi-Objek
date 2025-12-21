@@ -57,6 +57,7 @@ public class BattleScreen implements Screen {
 
         // 4. Start Music
         bgm = ResourceManager.getInstance().getMusic("Soundtrack/BattleScreen.mp3");
+        bgm.setVolume(game.settings.getBgmVolume());
         bgm.setLooping(true);
         bgm.play();
 
