@@ -71,7 +71,7 @@ public class NarrativeScreen implements Screen {
     private int scriptIndex = 0;
 
     // Asset Gambar, SFX, Karakter, dan Soundtrack untuk VN
-    private Texture characterImg, suspiciousGuy, saberImg, pretenderImg, lancerImg, lancerBattleImg, ameliaImg, riderImg, charlotteImg, casterImg, fionaImg;
+    private Texture characterImg, suspiciousGuy, saberImg, pretenderImg, lancerImg, lancerBattleImg, ameliaImg, riderImg, charlotteImg, casterImg, fionaImg, sultanImg, rajajawaImg, assassinImg;
     private Texture backgroundTexture;
     private Music currentSoundtrack;
     private String currentSoundtrackPath = "";
@@ -98,6 +98,9 @@ public class NarrativeScreen implements Screen {
         charlotteImg = getTex("Entity/Character/Charlotte.png");
         casterImg = getTex("Entity/Character/Caster.png");
         fionaImg = getTex("Entity/Character/Fiona.png");
+        sultanImg = getTex("Entity/Character/Sultan.png");
+        rajajawaImg = getTex("Entity/Character/RajaJawa.png");
+        assassinImg = getTex("Entity/Character/Assassin.png");
 
         // PERUBAHAN DISINI: Ambil texture background dari Resource Manager
         backgroundTexture = getTex("Background/Temps.png");
@@ -638,6 +641,19 @@ public class NarrativeScreen implements Screen {
         else if (currentText.startsWith("Fiona")) {
             drawCharacter(fionaImg, true);
         }
+        else if (currentText.startsWith("Amelia")) {
+            drawCharacter(ameliaImg, true);
+        }
+        else if (currentText.startsWith("Sultan")) {
+            drawCharacter(sultanImg, true);
+        }
+        else if (currentText.startsWith("Assassin")) {
+            drawCharacter(assassinImg, true);
+        }
+        else if (currentText.startsWith("Raja Jawa")) {
+            drawCharacter(rajajawaImg, true);
+        }
+
         stage.getBatch().end();
 
         // Update dan Gambar UI (Kotak Dialog) PALING TERAKHIR (Layer teratas)
