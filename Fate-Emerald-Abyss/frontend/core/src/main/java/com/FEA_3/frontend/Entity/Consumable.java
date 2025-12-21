@@ -9,7 +9,10 @@ public class Consumable {
     public enum ItemType {
         POTION_HP,
         POTION_MP,
-        BUFF_DEF
+        BUFF_DEF,
+        BUFF_ATK,
+        BUFF_ACC,
+        BUFF_CRIT
     }
 
     public Consumable(String name, ItemType type, int value, int qty) {
@@ -53,6 +56,22 @@ public class Consumable {
                 target.getStats().setDefense(newDef);
                 System.out.println("Defense increased by " + increaseAmount + " (" + value + "%)");
                 System.out.println("Buff applied! Total DEF: " + newDef);
+                break;
+
+            case BUFF_ATK:
+                // Value = Persentase (misal 30)
+                target.setAttackBuff(3); // Durasi 3 Turn
+                System.out.println("Attack Buff applied for 3 turns!");
+                break;
+
+            case BUFF_ACC:
+                target.setAccuracyBuff(3); // Durasi 3 Turn
+                System.out.println("Accuracy Buff applied for 3 turns!");
+                break;
+
+            case BUFF_CRIT:
+                target.setCritBuff(2); // Durasi 2 Turn
+                System.out.println("Crit Buff applied for 2 turns!");
                 break;
         }
         quantity--;
