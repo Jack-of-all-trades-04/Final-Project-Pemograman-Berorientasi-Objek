@@ -53,7 +53,7 @@ public class UnitDatabase {
         // OLD ATK: 25+6*L   -> NEW ATK: 32 + 7*L (Supaya battle tidak kelamaan)
         // OLD MP: 120+28*L  -> NEW MP: 140 + 30*L (Bisa spam skill)
 
-        UnitData saber = new UnitData("Artoria",
+        UnitData saber = new UnitData("Saber",
             130, 25,    // HP: Base 130, Growth 25
             140, 30,    // MP: Base 140, Growth 30
             32, 7,      // ATK: Base 32, Growth 7

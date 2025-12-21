@@ -50,7 +50,7 @@ public class StatusScreen implements Screen {
 
         // 3. Panel Info Kiri (Gambar & Nama)
         Table leftPanel = new Table();
-        Texture charTex = ResourceManager.getInstance().getTexture("Entity/Player/Temp.png");
+        Texture charTex = ResourceManager.getInstance().getTexture("Entity/Player/Saber.png");
         Image charImage = new Image(charTex);
 
         Label nameLbl = new Label(stats.getName(), skin);

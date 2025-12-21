@@ -603,40 +603,49 @@ public class NarrativeScreen implements Screen {
         stage.getBatch().begin();
         stage.getBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        String currentText = script[scriptIndex].text; // Menggunakan currentTeks agar mudah dibaca
+        // --- PERBAIKAN DISINI ---
+        // Cek apakah scriptIndex masih dalam batas aman?
+        if (scriptIndex < script.length) {
 
-        if (currentText.startsWith("MC")) {
-            drawCharacter(characterImg, false);
-        }
-        else if (currentText.startsWith("Suspicious Guy")) {
-            drawCharacter(suspiciousGuy, true);
-        }
-        else if (currentText.startsWith("Saber")) {
-            drawCharacter(saberImg, false);
-        }
-        else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
-            drawCharacter(pretenderImg, true);
-        }
-        else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
-            drawCharacter(ameliaImg, true);
-        }
-        else if (currentText.startsWith("Lancer (Battle)")) {
-            drawCharacter(lancerBattleImg, true);
-        }
-        else if (currentText.startsWith("Lancer")) {
-            drawCharacter(lancerImg, true);
-        }
-        else if (currentText.startsWith("Rider")) {
-            drawCharacter(riderImg, true);
-        }
-        else if (currentText.startsWith("Charlotte")) {
-            drawCharacter(charlotteImg, true);
-        }
-        else if (currentText.startsWith("Caster")) {
-            drawCharacter(casterImg, true);
-        }
-        else if (currentText.startsWith("Fiona")) {
-            drawCharacter(fionaImg, true);
+            // Ambil text hanya jika index valid
+            String currentText = script[scriptIndex].text;
+
+            if (currentText.startsWith("MC")) {
+                drawCharacter(characterImg, false);
+            } else if (currentText.startsWith("Suspicious Guy")) {
+                drawCharacter(suspiciousGuy, true);
+            } else if (currentText.startsWith("Saber")) {
+                drawCharacter(saberImg, false);
+            } else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
+                drawCharacter(pretenderImg, true);
+            } else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
+                drawCharacter(ameliaImg, true);
+            } else if (currentText.startsWith("Lancer (Battle)")) {
+                drawCharacter(lancerBattleImg, true);
+            } else if (currentText.startsWith("Lancer")) {
+                drawCharacter(lancerImg, true);
+            } else if (currentText.startsWith("Rider")) {
+                drawCharacter(riderImg, true);
+            } else if (currentText.startsWith("Charlotte")) {
+                drawCharacter(charlotteImg, true);
+            } else if (currentText.startsWith("Caster")) {
+                drawCharacter(casterImg, true);
+            } else if (currentText.startsWith("Fiona")) {
+                drawCharacter(fionaImg, true);
+            }
+            else if (currentText.startsWith("Rider")) {
+                drawCharacter(riderImg, true);
+            }
+            else if (currentText.startsWith("Charlotte")) {
+                drawCharacter(charlotteImg, true);
+            }
+            else if (currentText.startsWith("Caster")) {
+                drawCharacter(casterImg, true);
+            }
+            else if (currentText.startsWith("Fiona")) {
+                drawCharacter(fionaImg, true);
+            }
+            // ------------------------
         }
         stage.getBatch().end();
 

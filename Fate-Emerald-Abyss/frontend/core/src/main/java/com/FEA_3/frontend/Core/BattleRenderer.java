@@ -33,12 +33,21 @@ public class BattleRenderer {
         }
 
         // 2. Load Animasi Unit
-        heroAnim = createAnimation("Entity/Player/Idle.png", 4, 0.15f);
+        heroAnim = createAnimation("Entity/Player/Saber-Battle.png", 4, 0.15f);
+        Texture enemyTex = UnitFactory.getEnemyTexture(enemyType);
 
-        // Setup Enemy Anim (Dari Static ke Anim 1 Frame)
-        Texture enemyStaticTex = UnitFactory.getEnemyTexture(enemyType);
-        TextureRegion[][] tmp = TextureRegion.split(enemyStaticTex, enemyStaticTex.getWidth(), enemyStaticTex.getHeight());
-        enemyAnim = new Animation<>(0.1f, tmp[0][0]);
+        // B. Ambil Jumlah Frame dari Factory (Pastikan method ini ada di UnitFactory)
+        int enemyFrameCount = UnitFactory.getEnemyFrameCount(enemyType);
+
+        // C. Buat Animasi
+        if (enemyFrameCount > 1) {
+            // Jika animasi (Assassin 6 frame, Rider 8 frame, dll)
+            enemyAnim = createAnimationFromTexture(enemyTex, enemyFrameCount, 0.15f);
+        } else {
+            // Jika gambar diam (1 frame)
+            TextureRegion[][] tmp = TextureRegion.split(enemyTex, enemyTex.getWidth(), enemyTex.getHeight());
+            enemyAnim = new Animation<>(0.1f, tmp[0][0]);
+        }
 
         // 3. Setup Posisi
         float uiPanelHeight = h * 0.3f;
@@ -47,6 +56,23 @@ public class BattleRenderer {
         heroY = groundLevel;
         enemyX = w * 0.65f;
         enemyY = groundLevel;
+    }
+
+    private Animation<TextureRegion> createAnimationFromTexture(Texture sheet, int cols, float frameDuration) {
+        // Hitung lebar per frame: Lebar Total / Jumlah Kolom
+        int tileWidth = sheet.getWidth() / cols;
+        int tileHeight = sheet.getHeight();
+
+        // Potong gambar
+        TextureRegion[][] tmp = TextureRegion.split(sheet, tileWidth, tileHeight);
+
+        // Masukkan ke Array 1 Dimensi
+        TextureRegion[] frames = new TextureRegion[cols];
+        for (int i = 0; i < cols; i++) {
+            frames[i] = tmp[0][i];
+        }
+
+        return new Animation<>(frameDuration, frames);
     }
 
     public void render(Batch batch, GameUnit hero, GameUnit enemy) {
