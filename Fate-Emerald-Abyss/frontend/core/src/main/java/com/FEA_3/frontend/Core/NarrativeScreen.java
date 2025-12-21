@@ -71,10 +71,15 @@ public class NarrativeScreen implements Screen {
     private int scriptIndex = 0;
 
     // Asset Gambar, SFX, Karakter, dan Soundtrack untuk VN
-    private Texture characterImg, suspiciousGuy, saberImg;
+    private Texture characterImg, suspiciousGuy, saberImg, pretenderImg, lancerImg, lancerBattleImg, ameliaImg;
     private Texture backgroundTexture;
     private Music currentSoundtrack;
     private String currentSoundtrackPath = "";
+
+    // Helper untuk mengambil texture
+    private Texture getTex(String path) {
+        return ResourceManager.getInstance().getTexture(path);
+    }
 
     public NarrativeScreen(Main game, int chapterID) {
         this.game = game;
@@ -82,12 +87,16 @@ public class NarrativeScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        characterImg = ResourceManager.getInstance().getTexture("Entity/Player/MC.png");
-        suspiciousGuy = ResourceManager.getInstance().getTexture("Entity/Enemy/suspiciousGuy.png");
-        saberImg = ResourceManager.getInstance().getTexture("Entity/Player/Saber.png");
+        characterImg = getTex("Entity/Player/MC.png");
+        suspiciousGuy = getTex("Entity/Enemy/suspiciousGuy.png");
+        saberImg = getTex("Entity/Player/Saber.png");
+        pretenderImg = getTex("Entity/Character/Tlaloc.png");
+        ameliaImg = getTex("Entity/Character/Amelia.png");
+        lancerImg = getTex("Entity/Character/Noel.png");
+        lancerBattleImg = getTex("Entity/Character/NoelBattle.png");
 
         // PERUBAHAN DISINI: Ambil texture background dari Resource Manager
-        backgroundTexture = ResourceManager.getInstance().getTexture("Background/Temps.png");
+        backgroundTexture = getTex("Background/Temps.png");
 
         this.script = loadChapterData(chapterID);
 
@@ -229,46 +238,170 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterTwoScript() {
         return new StoryStep[]{
-            line("[In the castle of royal capital]")
-                .setBackground("Background/Castle.jpeg"),
+            line("[Somewhere in the shrine]")
+                .setBackground("Background/Shrine.jpeg")
+                .setSoundtrack("Soundtrack/Mystical.mp3"),
             line("Sparking...")
                 .setSoundEffect("SFX/Spark.mp3"),
             line("???: 'So, you have summoned me huh? I guess you are my master'"),
-            line("Kedati: 'I see, analyzing into your pattern of magical energy and origin, can I conclude that you are Rider?'"),
-            line("Kedati: 'No, your origin name is Prabu Siliwangi?'"),
+            line("Charlotte: 'I see, analyzing into your pattern of magical energy and origin, can I conclude that you are Rider?'"),
+            line("Charlotte: 'No, your origin name is Prabu Siliwangi right?'"),
             line("Siliwangi: 'I see, so this is my master huh, how magnificent for recognizing my name with just magical analysis"),
             line("Siliwangi: 'Alright, for this war then i will help you achieve victory'"),
             line("[Somewhere in the castle]")
-                .setBackground("Background/Castle.jpeg"),
+                .setBackground("Background/Castle.jpeg")
+                .setSoundtrack("Soundtrack/Ominous.mp3"),
             line("Berserker: 'So, what do you actually wish from this war, master?'"),
             line("???: 'Unification of the world in one true power, only by achieving the omnipotent grail I can do that'"),
             line("Berserker: 'Why do you want to unify this world?'"),
             line("???: 'In my mind, this world is just too bleak, there is so much suffering, war, and injustice that always happens.'"),
-            line("???: 'By gaining the grail, I can chain all humanity in one state of rule so nobody can cause any mistreatment to each other.'"),
+            line("???: 'By gaining the grail, I can chain all humanity in one state of rule so nobody can cause any mistreatment to each other. Safety through absolute control.'"),
             line("Berserker: 'I see, then I shall abide to your will and work through that'"),
-            line("Ini chapter 2")
-                .setBattle(EnemyType.LANCER, "Background/Library.jpg")
+            line("[Somewhere in the capital]")
+                .setBackground("Background/RoyalCapital.jpeg")
+                .setSoundtrack("Soundtrack/WorldMap.mp3"),
+            line("MC: 'Alright, let’s do our intel gathering, we can go into the hidden library that only mages can access'"),
+            line("Saber: 'What do we search there?'"),
+            line("MC: 'Some info about the current location of mysteries, map, or anything related to this war.'"),
+            line("Saber: 'Hmm hmm, why do we just declare ourself and wait for the enemy?'"),
+            line("MC: 'Aw hell nah.'"),
+            line("Saber: 'Of course, I am joking, please don’t take it seriously.'"),
+            line("After that, we just travel to the library and at the same time someone just call our name"),
+            line("???: Hey, 'you are master and servant right?'"),
+            line("!!!"),
+            line("Someone just recognizes our status."),
+            line("Little Girl: 'Lancer, attack that servant.'"),
+            line("Lancer: 'Alright.'"),
+            line("Lancer (Battle): 'Preparing combat mode..'")
+                .setBattle(EnemyType.LANCER, "Background/RoyalCapital.jpeg"),
+            line("Lancer: 'Ugh... damn, this Saber is just too strong!'"),
+            line("Amelia: 'You are right, Lancer.'"),
+            line("MC: Do you guys want to continue this fight?'"),
+            line("Amelia: 'Well no. At this point, let’s work this out together.'"),
+            line("We decided to talk"),
+            line("Amelia: 'Firstly, my name is Amelia, master of Lancer. I am joining this war to get medicine and a relic that can help my magical research. What about you?'"),
+            line("MC: 'Well, I don't know. I guess I just do it to fulfill my duty as a Master.'"),
+            line("Amelia: 'What? Don’t bullshit me. Are you really risking your life for something like that? I couldn't accept that. What is your true wish?'"),
+            line("MC: 'It is true though. Well, if I can word it... then maybe my wish is to find my true wish?'"),
+            line("Amelia: 'You are conflicting yourself. But at least you have a goal, though.'")
         };
     }
 
     private StoryStep[] getChapterThreeScript() {
         return new StoryStep[]{
-            line("Ini chapter 3")
-                .setBattle(EnemyType.RIDER, "Background/Library.jpg")
+            line("Chapter 3: The Calculated Alliance")
+                .setBackground("Background/Kalimba Forest.png")
+                .setSoundtrack("Soundtrack/Mystical.mp3"),
+            line("We formed a temporary party with Amelia and Lancer to secure the coastline. However, our path was blocked not by Caster, but by a dignified presence"),
+            line("A woman in a formal suit stands calmly in the clearing. Beside her stands a man radiating the aura of a King."),
+            line("Charlotte: 'Halt. This area is under El-Melloi observation.'"),
+            line("Rider (Prabu Siliwangi): 'Young warriors. You carry a heavy scent of blood.'"),
+            line("MC: 'We are looking for Caster. We don't want trouble.'"),
+            line("Charlotte: 'Naive. In this war, weakness is a sin. If you cannot pass us, you will only be fodder for Caster.'"),
+            line("Charlotte: 'Rider. Test them.'"),
+            line("Rider: 'Hahaha! Very well! Show me your resolve, young Master! If your will is weak, my blade shall shatter it!'"),
+            line("Saber: 'A King, huh? Pier Gerlofs Donia accepts your challenge!'")
+                .setBattle(EnemyType.RIDER,"Background/Kalimba Forest.png"),
+            line("Battle between servants, Saber and Rider clash blades one last time, creating a shockwave that clears the trees around us. Neither backs down."),
+            line("Rider: 'Hahaha! Excellent! Your sword is honest, Saber! And you, young Master, your orders were decisive.'"),
+            line("Charlotte: 'That's enough, Rider. They passed.'"),
+            line("MC: 'You... stopped?'"),
+            line("Charlotte: 'My goal is to stop the irregularity of this war caused by the 'Administrator'. I need capable allies, not dead weight. You have proven your worth.'"),
+            line("MC: 'So, it was a test.'"),
+            line("Rider: 'Indeed. Let us fight side by side.'"),
+            line("Before we could celebrate our new alliance, the sea began to boil"),
+            line("Caster (Kadita): 'How noisy. Can't a Queen sleep?'"),
+            line("Sultan: 'Intruders... drown them all.'"),
+            line("Rider: 'The Queen of the South. I shall handle thi-"),
+            line("BOOOM!! Before Rider could move, a blue flash of lightning struck Caster from the sky. The Queen was vaporized instantly.")
+                .setSoundEffect("SFX/ThunderExplosion.mp3"),
+            line("We look up to the cliff. Fiona and Archer are standing there"),
+            line("Fiona: 'Target neutralized. Efficient, isn't it?'"),
+            line("MC: 'You..'"),
+            line(" Fiona: 'I am Fiona. Since you survived Rider's test, I calculate a 48% success rate if we join forces.'"),
+            line("And thus, the Great Alliance was formed.")
         };
     }
 
     private StoryStep[] getChapterFourScript() {
         return new StoryStep[]{
-            line("Ini chapter 4")
-                .setBattle(EnemyType.ASSASSIN, "Background/Library.jpg")
+            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united."),
+            line("Fiona: 'Raja Jawa is in the Floating Fortress. Here is the plan.'"),
+            line("Fiona: 'Rider will use his Noble Phantasm to breach the main gate. Saber and Lancer will handle the guards. Archer will provide long-range support.'"),
+            line("Rider: 'A sound plan. My chariot shall crush their defenses.'"),
+            line("Amelia: 'Finally... we can end this.'"),
+            line("Suddenly, the air turns cold.")
+                .setSoundtrack("STOP"),
+            line("Assassin: 'My, my~ A full course meal served on a silver platter.'")
+                .setBattle(EnemyType.ASSASSIN,"Background/Aliz Ruins.png"),
+            line("Raja Jawa (Voice): 'Disappointing. Burn.'"),
+            line("The sky turns red. The orbital bombardment begins."),
+            line("The beam falls. We have no time to run."),
+            line("Archer: 'Pashupata!!'"),
+            line("Archer sacrifices himself to block the beam. He fades away with a smile."),
+            line("Assassin lunges at the shocked Fiona."),
+            line("Rider: 'Not on my watch!'"),
+            line("Rider throws his body in front of Fiona, taking the cursed blade straight to his heart."),
+            line("Charlotte: 'Rider!!'"),
+            line("Rider: 'Live... on...'"),
+            line("Lancer grabs the laughing Assassin."),
+            line("Lancer: 'Die with me!'"),
+            line("In an instant, our alliance was shattered. Only Saber remained."),
+            line("Fiona: 'My calculations... everyone...'"),
+            line("MC: 'I will kill him. I swear... I will kill Raja Jawa!'")
         };
     }
 
     private StoryStep[] getChapterFinalScript() {
         return new StoryStep[]{
-            line("Ini chapter final atau 5")
-                .setBattle(EnemyType.PRETENDER, "Background/Library.jpg")
+            line("Ini chapter final atau 5"),
+            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits."),
+            line("Raja Jawa: 'Welcome. You are the last obstacle.'"),
+            line("MC: 'You are the one behind this... the one who wants to unify the world?'"),
+            line("Raja Jawa: 'Correct. Look at the tragedy below. Suffering caused by 'Choice'. By 'Ambition'.'"),
+            line("Raja Jawa: 'I will use the Grail to strip humanity of that burden. No more choice. No more pain. Everyone will be safe under my rule.'"),
+            line("Beside him stands Pretender (Tlaloc), radiating an ominous aura."),
+            line("MC: 'That's not safety. That's just a farm! And we are the cattle!'"),
+            line("Raja Jawa: 'It is peace.'"),
+            line("MC: 'No. It's death of the soul!'"),
+            line("I step forward, no longer afraid."),
+            line("I spent my life wondering why I exist. Searching for a 'best' life. I realized... there is no 'best'. There is only 'my' life."),
+            line("MC: 'If you take away my choice to suffer, to fail, to cry... you take away my life!'"),
+            line("MC: 'I would rather die as a free man than live as your safe slave! Leaver dea as slaef!'"),
+            line("Raja Jawa: 'Foolish. Tlaloc... Destroy them.'"),
+            line("Tlaloc: 'Alright'")
+                .setBattle(EnemyType.PRETENDER, "Background/Library.jpg"),
+            line("The castle is crumbling. Saber is kneeling, his great sword shattered. Pretender stands tall, barely scratched. The difference in power was absolute."),
+            line("Saber: 'Hah... Hah... I can't... cut through... that armor...'"),
+            line("Raja Jawa: 'See? Willpower means nothing before absolute power.'"),
+            line("MC: 'Saber...'"),
+            line(" Saber: 'Master... I have one strike left. It will cost my spirit origin. I will vanish.'"),
+            line("MC: 'Saber... you...'"),
+            line("Saber: 'But it will open a path for you. To strike him.'"),
+            line("MC: 'Do it. Let's show them.'"),
+            line("Saber: 'GRUTTE PIER!!!'"),
+            line("Saber burns his very soul into a massive swing. It doesn't kill Pretender. But it smashes Pretender aside, pinning the servant to the wall."),
+            line("Saber: 'NOW, MASTER!'"),
+            line("I run past the servant, straight towards Raja Jawa."),
+            line("Raja Jawa: 'You dare approach me? A mere human?'"),
+            line("MC: 'I am a human! That's why I struggle!'"),
+            line("I punch Raja Jawa with everything I have."),
+            line("The punch I pull up using strengthening is powerful enough to kill him"),
+            line("At last we survived the fall. The Grail War is over. The true nature of the grail itself is very destructive, I can't rely on it."),
+            line("I look around. Saber is still here, his form transparent, fading. Pretender pulls herself from the rubble. She is still alive. Raja Jawa is gone."),
+            line("Saber: 'Heh... looks like... I survived... but barely.'"),
+            line("MC: 'Saber...'"),
+            line("Saber: 'And that one... keeps living too.'"),
+            line("Pretender: ..."),
+            line("Pretender turns around and walks away into the mist. She has no Master now, but she survives."),
+            line("So, in the end... Caster is dead. Rider is dead. Archer is dead. Lancer is dead. Assassin is dead. Only Saber and Pretender remain in this scarred world."),
+            line("MC: 'Saber.'"),
+            line("Saber: 'Yes, Master?'"),
+            line("MC: 'I still don't know the ultimate meaning of life.'"),
+            line("MC: 'But I know that I want to live to find it. I want to choose tomorrow.'"),
+            line("She smiles. A genuine, big smile."),
+            line("Saber: 'That is enough, Mike. That is enough.'"),
+            line("'Leaver dea as slaef'. I chose to live. And I am free.")
         };
     }
 
@@ -475,6 +608,18 @@ public class NarrativeScreen implements Screen {
         }
         else if (currentText.startsWith("Saber")) {
             drawCharacter(saberImg, false);
+        }
+        else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
+            drawCharacter(pretenderImg, true);
+        }
+        else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
+            drawCharacter(ameliaImg, true);
+        }
+        else if (currentText.startsWith("Lancer (Battle)")) {
+            drawCharacter(lancerBattleImg, true);
+        }
+        else if (currentText.startsWith("Lancer")) {
+            drawCharacter(lancerImg, true);
         }
         stage.getBatch().end();
 
