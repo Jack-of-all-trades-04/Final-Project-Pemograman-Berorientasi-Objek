@@ -46,9 +46,9 @@ public class ShopScreen implements Screen {
         new ShopItem("Health Potion", 50, "Pulihkan 50 HP", "Consumable/HP Potion.png"),
         new ShopItem("Mana Potion", 80, "Pulihkan 30 MP", "Consumable/MP Potion.png"),
         new ShopItem("Iron Elixir", 65, "3-Turn 30% DEF", "Consumable/Iron Elixir.png"),
-        new ShopItem("Attack Potion", 100, "3-Turn +30% ATK", "Consumable/MP Potion.png"),
-        new ShopItem("Focus Potion", 90, "3-Turn +30% ACC", "Consumable/MP Potion.png"),
-        new ShopItem("Crit Potion", 120, "2-Turn +20% Crit", "Consumable/MP Potion.png")
+        new ShopItem("Attack Potion", 100, "3-Turn +30% ATK", "Consumable/Attack Potion.png"),
+        new ShopItem("Focus Potion", 90, "3-Turn +30% ACC", "Consumable/Focus Potion.png"),
+        new ShopItem("Crit Potion", 120, "2-Turn +20% Crit", "Consumable/Crit Potion.png")
     };
 
     public ShopScreen(Main game) {

@@ -653,20 +653,20 @@ public class NarrativeScreen implements Screen {
             else if (currentText.startsWith("Lancer")) {
                 drawCharacter(lancerImg, true);
             }
+            else if (currentText.startsWith("Rider")) {
+                drawCharacter(riderImg, true);
+            }
+            else if (currentText.startsWith("Charlotte")) {
+                drawCharacter(charlotteImg, true);
+            }
+            else if (currentText.startsWith("Caster")) {
+                drawCharacter(casterImg, true);
+            }
+            else if (currentText.startsWith("Fiona")) {
+                drawCharacter(fionaImg, true);
+            }
+            // ------------------------
         }
-        else if (currentText.startsWith("Rider")) {
-            drawCharacter(riderImg, true);
-        }
-        else if (currentText.startsWith("Charlotte")) {
-            drawCharacter(charlotteImg, true);
-        }
-        else if (currentText.startsWith("Caster")) {
-            drawCharacter(casterImg, true);
-        }
-        else if (currentText.startsWith("Fiona")) {
-            drawCharacter(fionaImg, true);
-        }
-        // ------------------------
         stage.getBatch().end();
 
         // Update dan Gambar UI (Kotak Dialog) PALING TERAKHIR (Layer teratas)
