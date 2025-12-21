@@ -24,6 +24,7 @@ public class NarrativeScreen implements Screen {
     private Stage stage;
     private Label nameLabel;
     private Label dialogLabel;
+    private int currentChapterId;
 
     // Membuat class baru agar tidak hanya menggunakan satu tipe string saja
     private static class StoryStep {
@@ -31,7 +32,6 @@ public class NarrativeScreen implements Screen {
         String backgroundPath = null;
         String soundtrackPath = null;
         String sfxPath = null;
-        boolean triggerBattle = false; // Digunakan untuk menentukan kapan memulai battle
 
         // FIELD BARU UNTUK BATTLE
         EnemyType battleEnemy = null;
@@ -67,119 +67,209 @@ public class NarrativeScreen implements Screen {
     }
 
     // Data Cerita Sederhana (Array of Steps)
-    private StoryStep[] script = {
-        line("Dear all, do you think there is even any meaning to this life?")
-            .setBackground("Background/Dream.png")
-            .setSoundtrack("Soundtrack/Dream.mp3"),
-        line("Why should I live and continue this life? What's make life worth living?"),
-        line("Someone said that you have to live the best of your life, but what does it mean by best?"),
-        line("Is achieving something great really matters? If we already achieved it, then what's next?"),
-        line("Is pleasure and happiness from achieving it actually the meaning itself?"),
-        line("But, is happiness really ultimate meaning to our life?"),
-        line("What is even a meaning? How do we consider something as a true meaning?"),
-        line("I don't know..."),
-        line("Can I even get out from this abyss of meaning?"),
-        line("Well..."),
-        line("Even to this day, when I always ponder on these questions, I still don't know what's the answer is..."),
-        line("Maybe.."),
-        line("Someday.."),
-        line("I will find the answer"),
-        line("...")
-            .setSoundtrack("STOP"),
-        line("......"),
-        line("Librarian: 'Hey...'"),
-        line("..."),
-        line("Librarian: 'Hey, WAKE UP, do you know it is prohibited to sleep in library?'")
-            .setBackground("Background/Library.jpg")
-            .setSoundEffect("SFX/TableSlam.mp3"),
-        line("MC: 'Alright-alright, I will wake up, jeez, do you know that there is a rule to not shouting in library?'")
-            .setSoundtrack("Soundtrack/Library.mp3"),
-        line("Librarian: 'It is an exception, sacrificing a little stability to prevent greater chaos is acceptable'"),
-        line("MC: 'What the hell? If you said so, I guess I can't argue with that'"),
-        line("This is one library in Faculty of Magecraft in University of Indonesia."),
-        line("The existence of faculty itself is concealed from the public, only special members such as higher board of rectorate itself have privilege to know such faculty exist"),
-        line("And if you think ordinary people can accidentally find it, then the chance is infinitesimal."),
-        line("This faculty exist in different space-time spectrum."),
-        line("Only those who have handful knowledge of magecraft can access it"),
-        line("By the way, In this library, I just happen to like reading any books of my interests."),
-        line("philosophy, math, computing, science, engineering, anatomy, psychology, magecraft theory, and eventually history itself."),
-        line("Sometimes, it is just becoming of my habit to sleep in library while reading a book."),
-        line("..."),
-        line("There is sentence that's just lingering in my mind recently"),
-        line("'Leaver dea as slaef.'")
-            .setBackground("Background/BookPage.jpeg")
-            .setSoundEffect("SFX/BookOpening.mp3"),
-        line("It is a quote from a history book I read, English-wise it means 'it is better to die instead of being a slave'"),
-        line("What does it mean by slave?"),
-        line("MC: 'Hey, do you know the meaning of this part of sentence?'")
-            .setBackground("Background/Library.jpg"),
-        line("Librarian: 'I think this quote is saying about free will. Let me ask you a question, if your life is tied by someone will, would you accept it or rebel against it?'"),
-        line("MC: 'I don't know, but here is my unpopular opinion, if someone who's tying their will is keeping them safe, well, and healthy, Is it bad to let them free since they could choose the wrong path that can destroy themself?'"),
-        line("Librarian: 'Well, I guess that's a one way to interpret it, I think it is up to them what are they valuing more, free will of a sufferer or safety of a slave'"),
-        line("MC: 'That makes sense. In modern society, there are those worker who forced to do what their supervisor said without even noticing or questioning if that's not part of their job description. What a straight slavery'"),
-        line("Well, pondering about it desperately would never make me understand. I guess let's settle it for now."),
-        line("And then there is this strange sign in my hand, it just abruptly appear out of nowhere some days ago, no pain or any anomaly resulting from this sign, only a sign that makes my appearance of hand peculiar, so i just hide it using gloves."),
-        line("Realizing it has been already this late, i guess i need to go home."),
-        line("I usually return to my home using public transport such as train and bus.")
-            .setBackground("Background/TightAlley.jpeg")
-            .setSoundtrack("Soundtrack/Decisions.mp3"),
-        line("And i think the process of returning itself is satisfying."),
-        line("I can contemplate anything i like. Thinking about it, i still don't know what is this sign in my hand..."),
-        line("Just sometimes after contemplating, i just hearing something at this quiet alley..."),
-        line("Suspicious Guy: ..."),
-        line("It appears to be a suspicious guy using a strange suit..."),
-        line("This guy suddenly just throwing a knife at me."),
-        line("MC : 'Wha??'")
-            .setSoundEffect("SFX/KnifeThrowing.mp3"),
-        line("I just happen evading the attack using my body strengthening, i need to escape since this guy is trying to kill me."),
-        line("I run..."),
-        line("Keep running..."),
-        line("But this thing is still chasing me until i have no energy left."),
-        line("And suddenly at this moment, my time and reality just run very slowly and practically stopping..."),
-        line("Unknown Voice: 'You are really on such predicament'"),
-        line("MC: 'Who are you? And why the reality is just stopping?'"),
-        line("Unknown Voice: 'Look at your hand, do you really not know what's the meaning of the sign?'"),
-        line("MC: 'I really don't know, i am trying to search what is this'"),
-        line("Unknown Voice: 'It is command spells, you are qualified as a master at incoming Holy Grail War'"),
-        line("MC: 'Me, a master? I see'"),
-        line("I just remember there is servant contract system in such a war where command spells is given to every master to command their servant, I think this is one of it huh, i don't know which war i was involved in and why i am being involved, but i guess lets finish this predicament first"),
-        line("Unknown Voice: 'Hey, don't just stop like that, you have to summon me immediately, i could not accelerate our perception any longer, you don't wanna get killed don't you?'"),
-        line("Well, at this point I don't have a choice to reject the involvement since I can die if rejecting it."),
-        line("Not long after that, the reality and time itself is coming back to normal."),
-        line("MC: 'Alright. Then I shalt summon thee... COME!!!'"),
-        line("After spelling such command, appear a tall girl with a big two-handed sword ready at her hand ready to fight back a suspicious guy, from the image I get, i think my servant is Saber-class servant."),
-        line("Saber: 'Hello there, let me handle this guy first'")
-            .setBattle(EnemyType.ASSASSIN, "Background/TightAlley.jpeg"),
-        line("Saber: 'Hey, you are Assassin right?"),
-        line("Suspicious Guy: '...'"),
-        line("Saber: 'Not answering anything... what a typical assassin'"),
-        line("Suspicious Guy: [Escape and disappear]"),
-        line("Saber: 'Tch, I guess we don't know anything huh?'"),
-        line("Saber: 'Alright Master, let's get into safe place'"),
-        line("Saber: Well Master, let me introduce myself. I am Pier Gerlofs Donia..."),
-        line("Saber: 'Nice to meet you. Let's work this out together shall we? :D'")
-    };
+    private StoryStep[] script;
     private int scriptIndex = 0;
 
     // Asset Gambar, SFX, Karakter, dan Soundtrack untuk VN
-    private Texture characterImg, suspiciousGuy;
+    private Texture characterImg, suspiciousGuy, saberImg;
     private Texture backgroundTexture;
     private Music currentSoundtrack;
     private String currentSoundtrackPath = "";
 
-    public NarrativeScreen(Main game) {
+    public NarrativeScreen(Main game, int chapterID) {
         this.game = game;
+        this.currentChapterId = chapterID;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
         characterImg = ResourceManager.getInstance().getTexture("Entity/Player/MC.png");
         suspiciousGuy = ResourceManager.getInstance().getTexture("Entity/Enemy/suspiciousGuy.png");
+        saberImg = ResourceManager.getInstance().getTexture("Entity/Player/Saber.png");
 
         // PERUBAHAN DISINI: Ambil texture background dari Resource Manager
         backgroundTexture = ResourceManager.getInstance().getTexture("Background/Temps.png");
 
+        this.script = loadChapterData(chapterID);
+
         setupUI();
         updateSceneData();
+    }
+
+    private StoryStep[] loadChapterData(int chapterId) {
+        switch (chapterId) {
+            case 1:
+                return getPrologueScript(); // Prolog atau Chapter 1
+            case 2:
+                return getChapterTwoScript(); // Chapter 2
+            case 3:
+                return getChapterThreeScript(); // Chapter 3
+            case 4:
+                return getChapterFourScript(); // Chapter 4
+            case 5:
+                return getChapterFinalScript(); // Final battle atau Chapter 5
+            default:
+                // Fallback jika ID salah
+                return new StoryStep[] {
+                    line("Error: Chapter data not found.").setBackground("Background/Blackscreen.jpg")
+                };
+        }
+    }
+    // Template
+    /*private StoryStep[] getChapterOneScript() {
+        return new StoryStep[]{
+
+        };
+    }*/
+
+    private StoryStep[] getPrologueScript() {
+        return new StoryStep[]{
+            line("Dear all, do you think there is even any meaning to this life?")
+                .setBackground("Background/Dream.png")
+                .setSoundtrack("Soundtrack/Dream.mp3"),
+            line("Why should I live and continue this life? What's make life worth living?"),
+            line("Someone said that you have to live the best of your life, but what does it mean by best?"),
+            line("Is achieving something great really matters? If we already achieved it, then what's next?"),
+            line("Is pleasure and happiness from achieving it actually the meaning itself?"),
+            line("But, is happiness really ultimate meaning to our life?"),
+            line("What is even a meaning? How do we consider something as a true meaning?"),
+            line("I don't know..."),
+            line("Can I even get out from this abyss of meaning?"),
+            line("Well..."),
+            line("Even to this day, when I always ponder on these questions, I still don't know what's the answer is..."),
+            line("Maybe.."),
+            line("Someday.."),
+            line("I hope I will find the answer…"),
+            line("...")
+                .setSoundtrack("STOP"),
+            line("......"),
+            line("Librarian: 'Hey...'"),
+            line("..."),
+            line("Librarian: 'Hey, WAKE UP, do you know it is prohibited to sleep in library?'")
+                .setBackground("Background/Library.jpg")
+                .setSoundEffect("SFX/TableSlam.mp3"),
+            line("MC: 'Alright-alright, I will wake up, jeez, do you know that there is a rule to not shouting in library?'")
+                .setSoundtrack("Soundtrack/Library.mp3"),
+            line("Librarian: 'It is an exception, sacrificing a little stability to prevent greater chaos is acceptable'"),
+            line("MC: 'What the hell? If you said so, I guess I can't argue with that'"),
+            line("This is one library in Faculty of Magecraft in University of Indonesia."),
+            line("The existence of faculty itself is concealed from the public, only special members such as higher board of rectorate itself have privilege to know such faculty exist"),
+            line("And if you think ordinary people can accidentally find it, then the chance is infinitesimal."),
+            line("This faculty exist in different space-time spectrum."),
+            line("Only those who have handful knowledge of magecraft can access it"),
+            line("By the way, In this library, I just happen to like reading any books of my interests."),
+            line("Philosophy, math, computing, science, engineering, anatomy, psychology, magecraft theory, and eventually history itself."),
+            line("Sometimes, it is just becoming of my habit to sleep in library while reading a book."),
+            line("..."),
+            line("There is sentence that's just lingering in my mind recently"),
+            line("'Leaver dea as slaef.'")
+                .setBackground("Background/BookPage.jpeg")
+                .setSoundEffect("SFX/BookOpening.mp3"),
+            line("It is a quote from a history book I read, English-wise it means 'it is better to die instead of being a slave'"),
+            line("What does it mean by slave?"),
+            line("MC: 'Hey, do you know the meaning of this part of sentence?'")
+                .setBackground("Background/Library.jpg"),
+            line("Librarian: 'I think this quote is saying about free will. Let me ask you a question, if your life is tied by someone will, would you accept it or rebel against it?'"),
+            line("MC: 'I don't know, but here is my unpopular opinion, if someone who's tying their will is keeping them safe, well, and healthy, Is it bad to let them free since they could choose the wrong path that can destroy themself?'"),
+            line("Librarian: 'Well, I guess that's a one way to interpret it, I think it is up to them what are they valuing more, free will of a sufferer or safety of a slave'"),
+            line("MC: 'That makes sense. In modern society, there are those worker who forced to do what their supervisor said without even noticing or questioning if that's not part of their job description. What a straight slavery'"),
+            line("Well, pondering about it desperately would never make me understand. I guess let's settle it for now."),
+            line("And then there is this strange sign in my hand, it just abruptly appear out of nowhere some days ago, no pain or any anomaly resulting from this sign, only a sign that makes my appearance of hand peculiar, so i just hide it using gloves."),
+            line("Realizing it has been already this late, i guess i need to go home."),
+            line("I usually return to my home using public transport such as train and bus.")
+                .setBackground("Background/TightAlley.jpeg")
+                .setSoundtrack("Soundtrack/Decisions.mp3"),
+            line("And i think the process of returning itself is satisfying."),
+            line("I can contemplate anything i like. Thinking about it, i still don't know what is this sign in my hand..."),
+            line("Just sometimes after contemplating, i just hear something in this quiet alley..."),
+            line("Suspicious Guy: ..."),
+            line("It appears to be a suspicious guy using a strange suit..."),
+            line("This guy suddenly just threw a knife at me."),
+            line("MC : 'Wha??'")
+                .setSoundEffect("SFX/KnifeThrowing.mp3"),
+            line("I just happened to evade the attack by using my body strengthening,"),
+            line("Let's evaluate this situation, their speed is terrifying, I hardly see the knife. My last evasion is also really lucky."),
+            line("I really need to get out of here quickly, it is an opponent that i can't face directly."),
+            line("I run..."),
+            line("Keep running..."),
+            line("But this thing is still chasing me until i have no energy left."),
+            line("I run anywhere safe until I got into this open space.")
+                .setBackground("Background/DarkPark.jpeg"),
+            line("And suddenly at this moment, my time and reality just run very slowly and practically stopping..."),
+            line("Unknown Voice: 'You are really on such predicament'"),
+            line("MC: 'Who are you? And why the reality is just stopping?'"),
+            line("Unknown Voice: 'Look at your hand, do you really not know what's the meaning of the sign?'"),
+            line("MC: 'I really don't know, i am trying to search what is this'"),
+            line("Unknown Voice: 'It is command spells, you are qualified as a master at incoming Holy Grail War'"),
+            line("MC: 'Me, a master? I see'"),
+            line("I just remember there is servant contract system in such a war where command spells is given to every master to command their servant, I think this is one of it huh, i don't know which war i was involved in and why i am being involved, but i guess lets finish this predicament first"),
+            line("Unknown Voice: 'Hey, don't just stop like that, you have to summon me immediately, i could not accelerate our perception any longer, you don't wanna get killed don't you?'"),
+            line("Well, at this point I don't have a choice to reject the involvement since I can die if rejecting it."),
+            line("Not long after that, the reality and time itself is coming back to normal."),
+            line("MC: 'Alright. Then I shalt summon thee... COME!!!'"),
+            line("After spelling such command, appear a tall girl with a big two-handed sword ready at her hand ready to fight back a suspicious guy, from the image I get, i think my servant is Saber-class servant."),
+            line("Saber: 'Hello there, let me handle this guy first'")
+                .setBattle(EnemyType.ASSASSIN, "Background/DarkPark.jpeg"),
+            line("Saber: 'Hey, you are Assassin right?"),
+            line("Suspicious Guy: '...'"),
+            line("Saber: 'Not answering anything... what a typical assassin'"),
+            line("Suspicious Guy: [Escape and disappear]"),
+            line("Saber: 'Tch, I guess we don't know anything huh?'"),
+            line("Saber: 'Alright Master, let's get into safe place'"),
+            line("Saber: 'Hmm hmm, what a nice room you have'")
+                .setBackground("Background/Room.jpeg"),
+            line("Saber: 'Well Master, let me introduce myself. I am Pier Gerlofs Donia, a saber-class servant summoned to the current Holy Grail War.'"),
+            line("Saber: 'Nice to meet you. Let's work this out together shall we? :D'"),
+            line("And that’s how I met my servant for the first time some days ago.")
+                .setBackground("Background/Blackscreen.jpg")
+                .setSoundtrack("STOP"),
+            line("Now, I am here in Yogyakarta where the Holy Grail War happens. It just feels surreal that my life turns dramatically like this.")
+                .setBackground("Background/RoyalCapital.jpeg")
+        };
+    }
+
+    private StoryStep[] getChapterTwoScript() {
+        return new StoryStep[]{
+            line("[In the castle of royal capital]")
+                .setBackground("Background/Castle.jpeg"),
+            line("Sparking...")
+                .setSoundEffect("SFX/Spark.mp3"),
+            line("???: 'So, you have summoned me huh? I guess you are my master'"),
+            line("Kedati: 'I see, analyzing into your pattern of magical energy and origin, can I conclude that you are Rider?'"),
+            line("Kedati: 'No, your origin name is Prabu Siliwangi?'"),
+            line("Siliwangi: 'I see, so this is my master huh, how magnificent for recognizing my name with just magical analysis"),
+            line("Siliwangi: 'Alright, for this war then i will help you achieve victory'"),
+            line("[Somewhere in the castle]")
+                .setBackground("Background/Castle.jpeg"),
+            line("Berserker: 'So, what do you actually wish from this war, master?'"),
+            line("???: 'Unification of the world in one true power, only by achieving the omnipotent grail I can do that'"),
+            line("Berserker: 'Why do you want to unify this world?'"),
+            line("???: 'In my mind, this world is just too bleak, there is so much suffering, war, and injustice that always happens.'"),
+            line("???: 'By gaining the grail, I can chain all humanity in one state of rule so nobody can cause any mistreatment to each other.'"),
+            line("Berserker: 'I see, then I shall abide to your will and work through that'"),
+            line("Ini chapter 2")
+                .setBattle(EnemyType.LANCER, "Background/Library.jpg")
+        };
+    }
+
+    private StoryStep[] getChapterThreeScript() {
+        return new StoryStep[]{
+            line("Ini chapter 3")
+                .setBattle(EnemyType.RIDER, "Background/Library.jpg")
+        };
+    }
+
+    private StoryStep[] getChapterFourScript() {
+        return new StoryStep[]{
+            line("Ini chapter 4")
+                .setBattle(EnemyType.ASSASSIN, "Background/Library.jpg")
+        };
+    }
+
+    private StoryStep[] getChapterFinalScript() {
+        return new StoryStep[]{
+            line("Ini chapter final atau 5")
+                .setBattle(EnemyType.PRETENDER, "Background/Library.jpg")
+        };
     }
 
     private void setupUI() {
@@ -240,6 +330,9 @@ public class NarrativeScreen implements Screen {
         scriptIndex++;
 
         if (scriptIndex >= script.length) {
+
+            // Inkremen unlockedChapter
+            completeChapter();
             // CERITA HABIS -> PINDAH KE WORLD MAP
             game.setScreen(new WorldMapScreen(game));
 
@@ -247,6 +340,29 @@ public class NarrativeScreen implements Screen {
             // dispose();
         } else {
             updateSceneData();
+        }
+    }
+
+    private void completeChapter() {
+        // Ambil chapter yang sedang terbuka sekarang di database
+        int currentProgress = game.playerStats.getUnlockedChapter();
+
+        // Logika:
+        // Jika kita sedang main Chapter 1 (currentChapterId = 1)
+        // Dan progress pemain masih 1 (currentProgress = 1)
+        // Maka naikkan jadi 2.
+        // (Cek ini penting agar jika pemain mengulang Chapter 1, progress tidak ter-reset atau nambah terus)
+
+        if (this.currentChapterId == currentProgress) {
+            int nextChapter = currentProgress + 1;
+
+            // 1. Update di Memory Lokal
+            game.playerStats.setUnlockedChapter(nextChapter);
+            System.out.println("STORY FINISHED! Unlocking Chapter " + nextChapter);
+
+            // 2. Simpan ke Server
+            com.FEA_3.frontend.Utils.NetworkManager.getInstance()
+                .savePlayer("User1", game.playerStats);
         }
     }
 
@@ -266,6 +382,7 @@ public class NarrativeScreen implements Screen {
                 if (scriptIndex < script.length) {
                     updateSceneData();
                 } else {
+                    completeChapter();
                     game.setScreen(new WorldMapScreen(game));
                 }
             }
@@ -355,6 +472,9 @@ public class NarrativeScreen implements Screen {
         }
         else if (currentText.startsWith("Suspicious Guy")) {
             drawCharacter(suspiciousGuy, true);
+        }
+        else if (currentText.startsWith("Saber")) {
+            drawCharacter(saberImg, false);
         }
         stage.getBatch().end();
 

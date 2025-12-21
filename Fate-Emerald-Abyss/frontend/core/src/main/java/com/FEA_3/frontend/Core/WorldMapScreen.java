@@ -147,11 +147,27 @@ public class WorldMapScreen implements Screen {
         // ==========================================
 
         // --- 1. NODE MAIN STORY (Istana) ---
-        addNode(NodeType.MAIN_STORY, 600, 400, "Royal Capital", skin, () -> {
-            // Logika: Masuk ke NarrativeScreen
-            // Nanti NarrativeScreen perlu dimodifikasi agar bisa load "Chapter" tertentu
-            game.setScreen(new NarrativeScreen(game));
-        });
+        addNode(NodeType.MAIN_STORY, 600, 400, "Royal Capital (Prologue)", skin, () -> {
+            // Logika: Masuk ke NarrativeScreen dengan ID 1
+            game.setScreen(new NarrativeScreen(game,1));
+        }, 1);
+
+        addNode(NodeType.MAIN_STORY, 300, 500, "Hidden Library (Ch 2)", skin, () -> {
+            // Panggil NarrativeScreen dengan ID 2
+            game.setScreen(new NarrativeScreen(game, 2));
+        }, 2);
+
+        addNode(NodeType.MAIN_STORY, 880, 420, "Mage Academy (Ch.3)", skin, () -> {
+            game.setScreen(new NarrativeScreen(game, 3));
+        }, 3);
+
+        addNode(NodeType.MAIN_STORY, 680, 100, "Old Battlefield (Ch.4)", skin, () -> {
+            game.setScreen(new NarrativeScreen(game, 4));
+        }, 4);
+
+        addNode(NodeType.MAIN_STORY, 1150, 550, "Dragon Shrine (Final)", skin, () -> {
+            game.setScreen(new NarrativeScreen(game, 5));
+        }, 5);
 
         // --- 2. NODE RANDOM BATTLE (Hutan&Ruins Grinding) ---
         addNode(NodeType.RANDOM_BATTLE, 250, 350, "Bobota Forest", skin, () -> {
@@ -251,7 +267,7 @@ public class WorldMapScreen implements Screen {
         bgm.play();
     }
 
-    private void addNode(NodeType type, float x, float y, String name, Skin skin, Runnable action) {
+    private void addNode(NodeType type, float x, float y, String name, Skin skin, Runnable action, int reqChapter) {
         // Pilih Texture berdasarkan Tipe
         TextureRegionDrawable drawable = null;
         switch (type) {
@@ -264,24 +280,54 @@ public class WorldMapScreen implements Screen {
         ImageButton nodeBtn = new ImageButton(drawable);
         nodeBtn.setPosition(x, y);
 
+        // Load progress chapter
+        int playerProgress = game.playerStats.getUnlockedChapter();
+
+        if (playerProgress < reqChapter) {
+            // JIKA BELUM UNLOCK:
+            nodeBtn.setColor(Color.DARK_GRAY); // Gelapkan tombol visualnya
+            nodeBtn.setDisabled(true);         // Matikan fungsi tombol (opsional di level Actor)
+
+            // Listener Khusus untuk menampilkan pesan "LOCKED"
+            nodeBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    // Tampilkan Dialog Bahwa Chapter Terkunci
+                    showLockedDialog(reqChapter);
+                }
+            });
+        } else {
+            // JIKA SUDAH UNLOCK: Normal
+            nodeBtn.setColor(Color.WHITE);
+            nodeBtn.addListener(new SoundListener());
+            nodeBtn.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    bgm.stop();
+                    action.run();
+                }
+            });
+        }
+
         // Tambahkan Label Nama Tempat di bawah Node
         Label nameLabel = new Label(name, skin);
         nameLabel.setFontScale(0.8f);
         // Posisikan label di tengah bawah tombol
         nameLabel.setPosition(x + (nodeBtn.getWidth() - nameLabel.getWidth()) / 2, y - 20);
 
-        // Listener Klik
-        nodeBtn.addListener(new SoundListener());
-        nodeBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                bgm.stop();
-                action.run();
-            }
-        });
-
         stage.addActor(nodeBtn);
         stage.addActor(nameLabel);
+    }
+
+    private void showLockedDialog(int reqChapter) {
+        com.badlogic.gdx.scenes.scene2d.ui.Dialog d = new com.badlogic.gdx.scenes.scene2d.ui.Dialog("LOCKED", ResourceManager.getInstance().getSkin());
+        d.text("Complete Chapter " + (reqChapter - 1) + " first!");
+        d.button("OK");
+        d.show(stage);
+    }
+
+    private void addNode(NodeType type, float x, float y, String name, Skin skin, Runnable action) {
+        addNode(type, x, y, name, skin, action, 1);
     }
 
     @Override
