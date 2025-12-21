@@ -159,7 +159,7 @@ public class NarrativeScreen implements Screen {
             line("..."),
             line("Librarian: 'Hey, WAKE UP, do you know it is prohibited to sleep in library?'")
                 .setBackground("Background/Library.jpg")
-                .setSoundEffect("Audio/Sound_Effect/TableSlam.mp3"),
+                .setSoundEffect("SFX/TableSlam.mp3"),
             line("MC: 'Alright-alright, I will wake up, jeez, do you know that there is a rule to not shouting in library?'")
                 .setSoundtrack("Soundtrack/Library.mp3"),
             line("Librarian: 'It is an exception, sacrificing a little stability to prevent greater chaos is acceptable'"),
@@ -176,7 +176,7 @@ public class NarrativeScreen implements Screen {
             line("There is sentence that's just lingering in my mind recently"),
             line("'Leaver dea as slaef.'")
                 .setBackground("Background/BookPage.jpeg")
-                .setSoundEffect("Audio/Sound_Effect/BookOpening.mp3"),
+                .setSoundEffect("SFX/BookOpening.mp3"),
             line("It is a quote from a history book I read, English-wise it means 'it is better to die instead of being a slave'"),
             line("What does it mean by slave?"),
             line("MC: 'Hey, do you know the meaning of this part of sentence?'")
@@ -198,7 +198,7 @@ public class NarrativeScreen implements Screen {
             line("It appears to be a suspicious guy using a strange suit..."),
             line("This guy suddenly just threw a knife at me."),
             line("MC : 'Wha??'")
-                .setSoundEffect("Audio/Sound_Effect/KnifeThrowing.mp3"),
+                .setSoundEffect("SFX/KnifeThrowing.mp3"),
             line("I just happened to evade the attack by using my body strengthening,"),
             line("Let's evaluate this situation, their speed is terrifying, I hardly see the knife. My last evasion is also really lucky."),
             line("I really need to get out of here quickly, it is an opponent that i can't face directly."),
@@ -246,7 +246,7 @@ public class NarrativeScreen implements Screen {
                 .setBackground("Background/Shrine.jpeg")
                 .setSoundtrack("Soundtrack/Mystical.mp3"),
             line("Sparking...")
-                .setSoundEffect("Audio/Sound_Effect/Spark.mp3"),
+                .setSoundEffect("SFX/Spark.mp3"),
             line("???: 'So, you have summoned me huh? I guess you are my master'"),
             line("Charlotte: 'I see, analyzing into your pattern of magical energy and origin, can I conclude that you are Rider?'"),
             line("Charlotte: 'No, your origin name is Prabu Siliwangi right?'"),
@@ -318,7 +318,7 @@ public class NarrativeScreen implements Screen {
             line("Sultan: 'Intruders... drown them all.'"),
             line("Rider: 'The Queen of the South. I shall handle thi-"),
             line("BOOOM!! Before Rider could move, a blue flash of lightning struck Caster from the sky. The Queen was vaporized instantly.")
-                .setSoundEffect("Audio/Sound_Effect/ThunderExplosion.mp3"),
+                .setSoundEffect("SFX/ThunderExplosion.mp3"),
             line("We look up to the cliff. Fiona and Archer are standing there"),
             line("Fiona: 'Target neutralized. Efficient, isn't it?'"),
             line("MC: 'You..'"),
@@ -329,9 +329,7 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterFourScript() {
         return new StoryStep[]{
-            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united.")
-                .setBackground("Background/Aliz Ruins.png")
-                .setSoundtrack("Soundtrack/WorldMap.mp3"),
+            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united."),
             line("Fiona: 'Raja Jawa is in the Floating Fortress. Here is the plan.'"),
             line("Fiona: 'Rider will use his Noble Phantasm to breach the main gate. Saber and Lancer will handle the guards. Archer will provide long-range support.'"),
             line("Rider: 'A sound plan. My chariot shall crush their defenses.'"),
@@ -340,8 +338,7 @@ public class NarrativeScreen implements Screen {
                 .setSoundtrack("STOP"),
             line("Assassin: 'My, my~ A full course meal served on a silver platter.'")
                 .setBattle(EnemyType.ASSASSIN,"Background/Aliz Ruins.png"),
-            line("Raja Jawa (Voice): 'Disappointing. Burn.'")
-                .setSoundtrack("Soundtrack/Decisions.mp3"),
+            line("Raja Jawa (Voice): 'Disappointing. Burn.'"),
             line("The sky turns red. The orbital bombardment begins."),
             line("The beam falls. We have no time to run."),
             line("Archer: 'Pashupata!!'"),
@@ -361,10 +358,9 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterFinalScript() {
         return new StoryStep[]{
-            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits.")
-                .setBackground("Background/Castle.jpeg"),
-            line("Raja Jawa: 'Welcome. You are the last obstacle.'")
-                .setSoundtrack("Soundtrack/Ominous.mp3"),
+            line("Ini chapter final atau 5"),
+            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits."),
+            line("Raja Jawa: 'Welcome. You are the last obstacle.'"),
             line("MC: 'You are the one behind this... the one who wants to unify the world?'"),
             line("Raja Jawa: 'Correct. Look at the tragedy below. Suffering caused by 'Choice'. By 'Ambition'.'"),
             line("Raja Jawa: 'I will use the Grail to strip humanity of that burden. No more choice. No more pain. Everyone will be safe under my rule.'"),
@@ -378,7 +374,7 @@ public class NarrativeScreen implements Screen {
             line("MC: 'I would rather die as a free man than live as your safe slave! Leaver dea as slaef!'"),
             line("Raja Jawa: 'Foolish. Tlaloc... Destroy them.'"),
             line("Tlaloc: 'Alright'")
-                .setBattle(EnemyType.PRETENDER, "Background/Castle.jpeg"),
+                .setBattle(EnemyType.PRETENDER, "Background/Library.jpg"),
             line("The castle is crumbling. Saber is kneeling, his great sword shattered. Pretender stands tall, barely scratched. The difference in power was absolute."),
             line("Saber: 'Hah... Hah... I can't... cut through... that armor...'"),
             line("Raja Jawa: 'See? Willpower means nothing before absolute power.'"),
@@ -410,8 +406,6 @@ public class NarrativeScreen implements Screen {
             line("She smiles. A genuine, big smile."),
             line("Saber: 'That is enough, Mike. That is enough.'"),
             line("'Leaver dea as slaef'. I chose to live. And I am free.")
-                .setBackground("Background/Blackscreen.jpg"),
-            line("THE END")
         };
     }
 
@@ -475,7 +469,10 @@ public class NarrativeScreen implements Screen {
         if (scriptIndex >= script.length) {
 
             // Inkremen unlockedChapter
-            finishAndExit();
+            completeChapter();
+            // CERITA HABIS -> PINDAH KE WORLD MAP
+            game.setScreen(new WorldMapScreen(game));
+
             // Opsional: Dispose narrative screen agar hemat memori karena sudah tidak dipakai
             // dispose();
         } else {
@@ -483,53 +480,27 @@ public class NarrativeScreen implements Screen {
         }
     }
 
-    private void finishAndExit() {
+    private void completeChapter() {
+        // Ambil chapter yang sedang terbuka sekarang di database
         int currentProgress = game.playerStats.getUnlockedChapter();
 
-        // Cek: Apakah kita perlu update?
-        // Gunakan logika '<' agar lebih aman (misal current=1, finish=1 -> set jadi 2)
-        if (currentProgress < this.currentChapterId + 1) {
+        // Logika:
+        // Jika kita sedang main Chapter 1 (currentChapterId = 1)
+        // Dan progress pemain masih 1 (currentProgress = 1)
+        // Maka naikkan jadi 2.
+        // (Cek ini penting agar jika pemain mengulang Chapter 1, progress tidak ter-reset atau nambah terus)
 
-            int nextChapter = this.currentChapterId + 1;
+        if (this.currentChapterId == currentProgress) {
+            int nextChapter = currentProgress + 1;
+
+            // 1. Update di Memory Lokal
             game.playerStats.setUnlockedChapter(nextChapter);
-            System.out.println("STORY FINISHED! Saving & Unlocking Chapter " + nextChapter + "...");
+            System.out.println("STORY FINISHED! Unlocking Chapter " + nextChapter);
 
-            // PANGGIL SAVE DENGAN CALLBACK
-            // Layar TIDAK AKAN PINDAH sampai Save berhasil.
-            com.FEA_3.frontend.Utils.NetworkManager.getInstance().savePlayer(
-                "User1",
-                game.playerStats,
-                new com.FEA_3.frontend.Utils.NetworkManager.SaveCallback() {
-                    @Override
-                    public void onSuccess() {
-                        System.out.println("Save Confirmed. Returning to Map.");
-                        game.setScreen(new WorldMapScreen(game));
-                    }
-
-                    @Override
-                    public void onFail(String msg) {
-                        System.err.println("Save Failed! " + msg);
-                        // Tetap pindah layar meski gagal save (biar gak nyangkut),
-                        // tapi user mungkin kehilangan progress.
-                        game.setScreen(new WorldMapScreen(game));
-                    }
-                }
-            );
-
-        } else {
-            // Jika ini Replay (sudah pernah tamat), langsung keluar tanpa save
-            System.out.println("Replay finished. Returning to Map.");
-            game.setScreen(new WorldMapScreen(game));
+            // 2. Simpan ke Server
+            com.FEA_3.frontend.Utils.NetworkManager.getInstance()
+                .savePlayer("User1", game.playerStats, null);
         }
-
-        // 2. Transisi dengan Jeda (PENTING UNTUK MENCEGAH RACE CONDITION)
-        // Kita beri waktu 0.5 detik agar 'savePlayer' selesai dikirim sebelum WorldMap me-load data lagi.
-        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
-            @Override
-            public void run() {
-                game.setScreen(new WorldMapScreen(game));
-            }
-        }, 0.5f);
     }
 
     private void triggerBattle(StoryStep step) {
@@ -548,7 +519,8 @@ public class NarrativeScreen implements Screen {
                 if (scriptIndex < script.length) {
                     updateSceneData();
                 } else {
-                    finishAndExit();
+                    completeChapter();
+                    game.setScreen(new WorldMapScreen(game));
                 }
             }
         };
@@ -631,38 +603,41 @@ public class NarrativeScreen implements Screen {
         stage.getBatch().begin();
         stage.getBatch().draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // --- PERBAIKAN DISINI ---
-        // Cek apakah scriptIndex masih dalam batas aman?
-        if (scriptIndex < script.length) {
+        String currentText = script[scriptIndex].text; // Menggunakan currentTeks agar mudah dibaca
 
-            // Ambil text hanya jika index valid
-            String currentText = script[scriptIndex].text;
-
-            if (currentText.startsWith("MC")) {
-                drawCharacter(characterImg, false);
-            } else if (currentText.startsWith("Suspicious Guy")) {
-                drawCharacter(suspiciousGuy, true);
-            } else if (currentText.startsWith("Saber")) {
-                drawCharacter(saberImg, false);
-            } else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
-                drawCharacter(pretenderImg, true);
-            } else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
-                drawCharacter(ameliaImg, true);
-            } else if (currentText.startsWith("Lancer (Battle)")) {
-                drawCharacter(lancerBattleImg, true);
-            } else if (currentText.startsWith("Lancer")) {
-                drawCharacter(lancerImg, true);
-            } else if (currentText.startsWith("Rider")) {
-                drawCharacter(riderImg, true);
-            } else if (currentText.startsWith("Charlotte")) {
-                drawCharacter(charlotteImg, true);
-            } else if (currentText.startsWith("Caster")) {
-                drawCharacter(casterImg, true);
-            } else if (currentText.startsWith("Fiona")) {
-                drawCharacter(fionaImg, true);
-            }
+        if (currentText.startsWith("MC")) {
+            drawCharacter(characterImg, false);
         }
-        // ------------------------
+        else if (currentText.startsWith("Suspicious Guy")) {
+            drawCharacter(suspiciousGuy, true);
+        }
+        else if (currentText.startsWith("Saber")) {
+            drawCharacter(saberImg, false);
+        }
+        else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
+            drawCharacter(pretenderImg, true);
+        }
+        else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
+            drawCharacter(ameliaImg, true);
+        }
+        else if (currentText.startsWith("Lancer (Battle)")) {
+            drawCharacter(lancerBattleImg, true);
+        }
+        else if (currentText.startsWith("Lancer")) {
+            drawCharacter(lancerImg, true);
+        }
+        else if (currentText.startsWith("Rider")) {
+            drawCharacter(riderImg, true);
+        }
+        else if (currentText.startsWith("Charlotte")) {
+            drawCharacter(charlotteImg, true);
+        }
+        else if (currentText.startsWith("Caster")) {
+            drawCharacter(casterImg, true);
+        }
+        else if (currentText.startsWith("Fiona")) {
+            drawCharacter(fionaImg, true);
+        }
         stage.getBatch().end();
 
         // Update dan Gambar UI (Kotak Dialog) PALING TERAKHIR (Layer teratas)
