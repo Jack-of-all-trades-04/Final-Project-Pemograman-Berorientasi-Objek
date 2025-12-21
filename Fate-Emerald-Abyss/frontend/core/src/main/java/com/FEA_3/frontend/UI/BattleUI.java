@@ -30,6 +30,8 @@ public class BattleUI {
     private EffectWidget playerEffects;
     private EffectWidget enemyEffects;
 
+    private Label notificationLabel;
+
     public BattleUI(Stage stage, BattleScreen screen, GameUnit hero, GameUnit enemy) {
         this.stage = stage;
         this.screen = screen;
@@ -49,6 +51,23 @@ public class BattleUI {
         enemyMpWidget = new StatusWidget(skin, Color.MAGENTA, true);
         playerEffects = new EffectWidget(skin);
         enemyEffects = new EffectWidget(skin);
+
+        // --- TAMBAHAN: SETUP NOTIFICATION LABEL ---
+        notificationLabel = new Label("", skin);
+        notificationLabel.setFontScale(1.5f);
+        notificationLabel.setColor(Color.GOLD);
+
+        // Bungkus dengan Table agar bisa dikasih background gelap transparan (opsional)
+        Table notifTable = new Table();
+        notifTable.setFillParent(true);
+        notifTable.top().padTop(50); // Muncul di atas
+        notifTable.add(notificationLabel);
+
+        // Awalnya tidak terlihat
+        notificationLabel.getColor().a = 0f;
+
+        // Add notifTable ke stage (paling terakhir agar di layer paling atas)
+        stage.addActor(notifTable);
 
         // 2. Left Panel (Player)
         Table leftPanel = new Table();
@@ -86,6 +105,18 @@ public class BattleUI {
         rootTable.add(bottomPanel).width(w).height(uiPanelHeight);
 
         stage.addActor(rootTable);
+    }
+
+    public void showNotification(String text) {
+        notificationLabel.setText(text);
+        notificationLabel.clearActions(); // Reset animasi sebelumnya jika ada
+
+        // Animasi: Muncul (FadeIn) -> Tunggu 1.5 detik -> Hilang (FadeOut)
+        notificationLabel.addAction(com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence(
+            com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeIn(0.2f),
+            com.badlogic.gdx.scenes.scene2d.actions.Actions.delay(1.5f),
+            com.badlogic.gdx.scenes.scene2d.actions.Actions.fadeOut(0.5f)
+        ));
     }
 
     private void createCommandTable() {

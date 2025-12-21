@@ -170,12 +170,13 @@ public class GameUnit {
         this.strategy = strategy;
     }
 
-    public void act(GameUnit target) {
+    public String act(GameUnit target) {
         if (strategy != null) {
-            // Minta strategi membuat keputusan, lalu eksekusi
             Command command = strategy.decideAction(this, target);
             command.execute();
+            return command.getDescription(); // Kembalikan teks deskripsi
         }
+        return "";
     }
 
     public void addObserver(UnitObserver observer) {

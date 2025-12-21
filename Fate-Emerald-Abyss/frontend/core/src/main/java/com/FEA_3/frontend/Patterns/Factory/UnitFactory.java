@@ -11,31 +11,51 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class UnitFactory {
 
-    // Helper untuk menentukan level musuh (Bisa dibuat random range nanti)
-    private static int getLevelForEnemy(EnemyType type) {
+    // Helper: Logic penentuan Level disini
+    private static int calculateEnemyLevel(EnemyType type, UnitStats playerStats) {
+        int pLvl = playerStats.getLevel();
+        int pChap = playerStats.getUnlockedChapter();
+
         switch (type) {
-            case ASSASSIN: return 1; // Atau 1 sesuai progress story
+            // --- A. GRINDING ENEMIES (Scale: Player Level atau +1) ---
+            case ANOMIMUS:
+            case BEELING:
+            case SLIME:
+            case GOLEM:
+                // 50% kemungkinan sama, 50% kemungkinan level + 1
+                return pLvl + (Math.random() > 0.5 ? 1 : 0);
+
+            // --- B. STORY BOSSES (Logic Khusus) ---
+            case ASSASSIN:
+                // Prologue (Ch 1) = Lvl 1. Chapter 3 dst = Lvl 15.
+                if (pChap >= 3) return 15;
+                return 1;
+
             case LANCER: return 5;
             case RIDER: return 10;
             case PRETENDER: return 15;
+
+            // --- C. AREA BOSSES (Fixed Level) ---
             case FARHAT: return 10;
             case MANDA: return 20;
-            default: return 1; // Slime, Anomimus, Beeling start lvl 1
+
+            default: return 1;
         }
     }
 
-    public static GameUnit createEnemy(EnemyType type) {
-        // 1. Tentukan Level (Bisa statis atau dinamis tergantung area map nanti)
-        int level = getLevelForEnemy(type);
+    // UPDATE: Method ini sekarang butuh data Player
+    public static GameUnit createEnemy(EnemyType type, UnitStats playerStats) {
+        // 1. Hitung Level
+        int level = calculateEnemyLevel(type, playerStats);
 
         // 2. Minta Stats dari Database
         UnitStats stats = UnitDatabase.createEnemyStats(type, level);
 
-        // 3. Buat Unit
+        // 3. Buat Unit & Strategy
         GameUnit enemy = new GameUnit(stats);
         enemy.setStrategy(new SmartAIStrategy());
 
-        // 4. Load Skill Musuh dari Database
+        // 4. Load Skill
         SkillDatabase.loadEnemySkills(enemy, type);
 
         return enemy;
@@ -46,57 +66,25 @@ public class UnitFactory {
     }
 
     public static Texture getEnemyTexture(EnemyType type) {
+        // ... (Kode texture Anda tetap sama, tidak perlu diubah) ...
         String path;
-
         switch (type) {
-            // --- MAIN QUEST BOSSES ---
-            case ASSASSIN:
-                path = "Entity/Enemy/Assasin/Idle1.png";
-                break;
-            case LANCER:
-                path = "Entity/Enemy/Lancer/Idle1.png";
-                break;
-            case RIDER:
-                path = "Entity/Enemy/Rider/Idle1.png";
-                break;
-            case PRETENDER:
-                path = "Entity/Enemy/Pretender/Idle1.png";
-                break;
-
-            // --- FOREST ENEMIES ---
-            case ANOMIMUS:
-                path = "Entity/Enemy/Anomimus/Idle/Idle0.png"; // Musuh topi hitam kecil di screenshot
-                break;
-            case BEELING:
-                path = "Entity/Enemy/Beeling/Idle/Idle0.png"; // Misal musuh lebah
-                break;
-            case FARHAT: // Boss Forest
-                path = "Entity/Enemy/Farhat/Idle/Idle (1).png";
-                break;
-
-            // --- RUINS ENEMIES ---
-            case SLIME:
-                path = "Entity/Enemy/Slime/SlimeBasic_00007.png";
-                break;
-            case GOLEM:
-                path = "Entity/Enemy/Golem/Idle/Idle0.png";
-                break;
-            case MANDA: // Boss Ruins
-                path = "Entity/Enemy/Manda/Idle/Warrior_Idle_1.png";
-                break;
-
-            // --- DEFAULT / FALLBACK ---
-            default:
-                path = "Entity/Enemy/Idle1.png"; // Gambar default jika tipe belum ada
-                break;
+            case ASSASSIN: path = "Entity/Enemy/Assasin/Idle1.png"; break;
+            case LANCER: path = "Entity/Enemy/Lancer/Idle1.png"; break;
+            case RIDER: path = "Entity/Enemy/Rider/Idle1.png"; break;
+            case PRETENDER: path = "Entity/Enemy/Pretender/Idle1.png"; break;
+            case ANOMIMUS: path = "Entity/Enemy/Anomimus/Idle/Idle0.png"; break;
+            case BEELING: path = "Entity/Enemy/Beeling/Idle/Idle0.png"; break;
+            case FARHAT: path = "Entity/Enemy/Farhat/Idle/Idle (1).png"; break;
+            case SLIME: path = "Entity/Enemy/Slime/SlimeBasic_00007.png"; break;
+            case GOLEM: path = "Entity/Enemy/Golem/Idle/Idle0.png"; break;
+            case MANDA: path = "Entity/Enemy/Manda/Idle/Warrior_Idle_1.png"; break;
+            default: path = "Entity/Enemy/Idle1.png"; break;
         }
-
-        // Return Texture dari ResourceManager
-        // Pastikan Anda menangani error jika gambar tidak ditemukan di ResourceManager
         try {
             return ResourceManager.getInstance().getTexture(path);
         } catch (Exception e) {
-            System.err.println("Texture not found: " + path + ". Using default.");
+            System.err.println("Texture not found: " + path);
             return ResourceManager.getInstance().getTexture("Entity/Enemy/Idle1.png");
         }
     }
