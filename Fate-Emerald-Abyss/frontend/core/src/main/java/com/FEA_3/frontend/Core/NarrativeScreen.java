@@ -318,7 +318,7 @@ public class NarrativeScreen implements Screen {
             line("Sultan: 'Intruders... drown them all.'"),
             line("Rider: 'The Queen of the South. I shall handle thi-"),
             line("BOOOM!! Before Rider could move, a blue flash of lightning struck Caster from the sky. The Queen was vaporized instantly.")
-                .setSoundEffect("SFX/ThunderExplosion.mp3"),
+                .setSoundEffect("Audio/Sound_Effect/ThunderExplosion.mp3"),
             line("We look up to the cliff. Fiona and Archer are standing there"),
             line("Fiona: 'Target neutralized. Efficient, isn't it?'"),
             line("MC: 'You..'"),
@@ -329,7 +329,9 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterFourScript() {
         return new StoryStep[]{
-            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united."),
+            line("We gathered at Aliz Ruins. It was a sight to behold - four Masters and four Servants united.")
+                .setBackground("Background/Aliz Ruins.png")
+                .setSoundtrack("Soundtrack/WorldMap.mp3"),
             line("Fiona: 'Raja Jawa is in the Floating Fortress. Here is the plan.'"),
             line("Fiona: 'Rider will use his Noble Phantasm to breach the main gate. Saber and Lancer will handle the guards. Archer will provide long-range support.'"),
             line("Rider: 'A sound plan. My chariot shall crush their defenses.'"),
@@ -338,7 +340,8 @@ public class NarrativeScreen implements Screen {
                 .setSoundtrack("STOP"),
             line("Assassin: 'My, my~ A full course meal served on a silver platter.'")
                 .setBattle(EnemyType.ASSASSIN,"Background/Aliz Ruins.png"),
-            line("Raja Jawa (Voice): 'Disappointing. Burn.'"),
+            line("Raja Jawa (Voice): 'Disappointing. Burn.'")
+                .setSoundtrack("Soundtrack/Decisions.mp3"),
             line("The sky turns red. The orbital bombardment begins."),
             line("The beam falls. We have no time to run."),
             line("Archer: 'Pashupata!!'"),
@@ -358,9 +361,10 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterFinalScript() {
         return new StoryStep[]{
-            line("Ini chapter final atau 5"),
-            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits."),
-            line("Raja Jawa: 'Welcome. You are the last obstacle.'"),
+            line("Only two servants remain. My Saber... and the mysterious Pretender. We tracked the source of the anomaly to a floating fortress above the capital. The Master of Pretender, the one calling himself Raja Jawa, awaits.")
+                .setBackground("Background/Castle.jpeg"),
+            line("Raja Jawa: 'Welcome. You are the last obstacle.'")
+                .setSoundtrack("Soundtrack/Ominous.mp3"),
             line("MC: 'You are the one behind this... the one who wants to unify the world?'"),
             line("Raja Jawa: 'Correct. Look at the tragedy below. Suffering caused by 'Choice'. By 'Ambition'.'"),
             line("Raja Jawa: 'I will use the Grail to strip humanity of that burden. No more choice. No more pain. Everyone will be safe under my rule.'"),
@@ -374,7 +378,7 @@ public class NarrativeScreen implements Screen {
             line("MC: 'I would rather die as a free man than live as your safe slave! Leaver dea as slaef!'"),
             line("Raja Jawa: 'Foolish. Tlaloc... Destroy them.'"),
             line("Tlaloc: 'Alright'")
-                .setBattle(EnemyType.PRETENDER, "Background/Library.jpg"),
+                .setBattle(EnemyType.PRETENDER, "Background/Castle.jpeg"),
             line("The castle is crumbling. Saber is kneeling, his great sword shattered. Pretender stands tall, barely scratched. The difference in power was absolute."),
             line("Saber: 'Hah... Hah... I can't... cut through... that armor...'"),
             line("Raja Jawa: 'See? Willpower means nothing before absolute power.'"),
@@ -406,6 +410,8 @@ public class NarrativeScreen implements Screen {
             line("She smiles. A genuine, big smile."),
             line("Saber: 'That is enough, Mike. That is enough.'"),
             line("'Leaver dea as slaef'. I chose to live. And I am free.")
+                .setBackground("Background/Blackscreen.jpg"),
+            line("THE END")
         };
     }
 
@@ -634,37 +640,27 @@ public class NarrativeScreen implements Screen {
 
             if (currentText.startsWith("MC")) {
                 drawCharacter(characterImg, false);
-            }
-            else if (currentText.startsWith("Suspicious Guy")) {
+            } else if (currentText.startsWith("Suspicious Guy")) {
                 drawCharacter(suspiciousGuy, true);
-            }
-            else if (currentText.startsWith("Saber")) {
+            } else if (currentText.startsWith("Saber")) {
                 drawCharacter(saberImg, false);
-            }
-            else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
+            } else if (currentText.startsWith("Berserker") || currentText.startsWith("Pretender")) {
                 drawCharacter(pretenderImg, true);
-            }
-            else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
+            } else if (currentText.startsWith("Little Girl") || currentText.startsWith("Amelia")) {
                 drawCharacter(ameliaImg, true);
-            }
-            else if (currentText.startsWith("Lancer (Battle)")) {
+            } else if (currentText.startsWith("Lancer (Battle)")) {
                 drawCharacter(lancerBattleImg, true);
-            }
-            else if (currentText.startsWith("Lancer")) {
+            } else if (currentText.startsWith("Lancer")) {
                 drawCharacter(lancerImg, true);
+            } else if (currentText.startsWith("Rider")) {
+                drawCharacter(riderImg, true);
+            } else if (currentText.startsWith("Charlotte")) {
+                drawCharacter(charlotteImg, true);
+            } else if (currentText.startsWith("Caster")) {
+                drawCharacter(casterImg, true);
+            } else if (currentText.startsWith("Fiona")) {
+                drawCharacter(fionaImg, true);
             }
-        }
-        else if (currentText.startsWith("Rider")) {
-            drawCharacter(riderImg, true);
-        }
-        else if (currentText.startsWith("Charlotte")) {
-            drawCharacter(charlotteImg, true);
-        }
-        else if (currentText.startsWith("Caster")) {
-            drawCharacter(casterImg, true);
-        }
-        else if (currentText.startsWith("Fiona")) {
-            drawCharacter(fionaImg, true);
         }
         // ------------------------
         stage.getBatch().end();
