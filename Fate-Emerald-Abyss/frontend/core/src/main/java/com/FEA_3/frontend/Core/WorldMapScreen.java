@@ -283,7 +283,7 @@ public class WorldMapScreen implements Screen {
         // Load progress chapter
         int playerProgress = game.playerStats.getUnlockedChapter();
 
-        if (playerProgress < reqChapter) {
+        if (playerProgress != reqChapter) {
             // JIKA BELUM UNLOCK:
             nodeBtn.setColor(Color.DARK_GRAY); // Gelapkan tombol visualnya
             nodeBtn.setDisabled(true);         // Matikan fungsi tombol (opsional di level Actor)
@@ -321,10 +321,17 @@ public class WorldMapScreen implements Screen {
 
     private void showLockedDialog(int reqChapter) {
         com.badlogic.gdx.scenes.scene2d.ui.Dialog d = new com.badlogic.gdx.scenes.scene2d.ui.Dialog("LOCKED", ResourceManager.getInstance().getSkin());
-        d.text("Complete Chapter " + (reqChapter - 1) + " first!");
+        int playerProgress = game.playerStats.getUnlockedChapter();
+
+        if (playerProgress > reqChapter) {
+            d.text("You have already completed this chapter!");
+        } else {
+            d.text("Complete Chapter " + (reqChapter - 1) + " first!");
+        }
         d.button("OK");
         d.show(stage);
     }
+
 
     private void addNode(NodeType type, float x, float y, String name, Skin skin, Runnable action) {
         addNode(type, x, y, name, skin, action, 1);
