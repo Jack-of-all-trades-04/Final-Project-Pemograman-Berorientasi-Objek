@@ -61,6 +61,7 @@ public class NetworkManager {
             "\"currentExp\": " + stats.getCurrentExp() + "," +
             "\"maxExp\": " + stats.getMaxExp() + "," +
             "\"manaCrystals\": " + stats.getManaCrystals() + "," +
+            "\"unlockedChapter\": " + stats.getUnlockedChapter() + "," +
             "\"maxHp\": " + stats.getMaxHp() + "," +
             "\"currentHp\": " + stats.getCurrentHp() + "," +
             "\"maxMp\": " + stats.getMaxMp() + "," +
@@ -163,6 +164,7 @@ public class NetworkManager {
                     stats.setCurrentExp(root.getInt("currentExp"));
                     stats.setMaxExp(root.getInt("maxExp"));
                     stats.setManaCrystals(root.getInt("manaCrystals"));
+                    stats.setUnlockedChapter(root.getInt("unlockedChapter", 1));
 
                     // --- LOAD INVENTORY (PARSING ARRAY) ---
                     List<Consumable> inventory = new ArrayList<>();

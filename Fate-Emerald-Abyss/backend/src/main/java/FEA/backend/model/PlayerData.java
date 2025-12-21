@@ -19,6 +19,7 @@ public class PlayerData {
     private int currentExp;
     private int maxExp;
     private int manaCrystals; // Currency Uang
+    private int unlockedChapter;
 
     // --- BASIC STATS ---
     private int maxHp;
@@ -52,6 +53,7 @@ public class PlayerData {
         this.currentExp = 0;
         this.maxExp = 100;
         this.manaCrystals = 0;
+        this.unlockedChapter = 1;
 
         // Stats Dasar
         this.maxHp = 98;    // Rumus: 80 + 18*1
@@ -178,6 +180,10 @@ public class PlayerData {
         this.accuracy = accuracy;
     }
     // ... dst (Jangan lupa getter setter sisanya)
+
+    // Chapter Progression
+    public int getUnlockedChapter() { return unlockedChapter; }
+    public void setUnlockedChapter(int unlockedChapter) { this.unlockedChapter = unlockedChapter; }
 
     // Inventory
 

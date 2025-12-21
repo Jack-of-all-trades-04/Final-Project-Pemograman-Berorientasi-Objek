@@ -120,7 +120,7 @@ public class MainMenuScreen implements Screen {
                                     game.playerStats = stats;
 
                                     // 4. MASUK KE CERITA (Bukan Map, karena New Game biasanya mulai dari Intro)
-                                    game.setScreen(new NarrativeScreen(game));
+                                    game.setScreen(new NarrativeScreen(game, 1));
                                 }
 
                                 @Override

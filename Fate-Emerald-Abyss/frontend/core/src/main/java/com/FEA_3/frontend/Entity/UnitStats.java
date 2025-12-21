@@ -27,6 +27,7 @@ public class UnitStats {
     private int currentExp;
     private int maxExp;
     private int manaCrystals;
+    private int unlockedChapter = 1;
 
     // --- INVENTORY ---
     private List<Consumable> inventory;
@@ -260,6 +261,9 @@ public class UnitStats {
     public void addManaCrystals(int amount) {
         this.manaCrystals += amount;
     }
+
+    public int getUnlockedChapter() { return unlockedChapter; }
+    public void setUnlockedChapter(int unlockedChapter) { this.unlockedChapter = unlockedChapter; }
 
     // ... Buat setter lain jika perlu
 }
