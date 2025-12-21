@@ -217,7 +217,7 @@ public class ShopScreen implements Screen {
                     buyBtn.setDisabled(true);
 
                     // 4. SIMPAN KE SERVER (Penting!)
-                    NetworkManager.getInstance().savePlayer(userId, currentStats);
+                    NetworkManager.getInstance().savePlayer(userId, currentStats,null);
 
                     // Feedback Visual Sukses
                     buyBtn.setColor(Color.GREEN);

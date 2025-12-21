@@ -42,7 +42,7 @@ public class BattleScreen implements Screen {
         // 1. Setup Units
         hero = new GameUnit(game.playerStats);
         UnitFactory.loadSkillsForPlayer(hero);
-        enemy = UnitFactory.createEnemy(enemyType);
+        enemy = UnitFactory.createEnemy(enemyType, game.playerStats);
 
         // 2. Setup Sub-Systems (Renderer & UI)
         renderer = new BattleRenderer(stage, bgPath, enemyType, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -110,19 +110,37 @@ public class BattleScreen implements Screen {
 
     public void onSkillSelected(Skill s) {
         if(isPlayerTurn()) {
-            hero.getStats().consumeMana(s.getManaCost());
+            // Kita bungkus logic skill player ke dalam Anonymous Class Command
+            // agar bisa punya getDescription()
+            performPlayerAction(new Command() {
+                @Override
+                public void execute() {
+                    hero.getStats().consumeMana(s.getManaCost());
+                    s.use(hero, enemy);
+                    renderer.playSkillEffect(s.getName(), false);
+                }
 
-            performPlayerAction(() -> {
-                // 1. Jalankan Logic Skill (Data)
-                s.use(hero, enemy);
-                System.out.println("Used Skill: " + s.getName());
+                @Override
+                public String getDescription() {
+                    return "Saber uses " + s.getName() + "!";
+                }
+            });
+        }
+    }
 
-                // 2. Tentukan Posisi Efek Visual
-                // Cek apakah skill ini tipe Heal/Buff diri sendiri?
-                boolean isSelfTarget = isSelfTargetSkill(s.getName());
+    public void onItemSelected(Consumable item) {
+        if(isPlayerTurn()) {
+            performPlayerAction(new Command() {
+                @Override
+                public void execute() {
+                    item.use(hero);
+                    renderer.playSkillEffect("Divine Light", true);
+                }
 
-                // Parameter kedua: true = muncul di Player, false = muncul di Musuh
-                renderer.playSkillEffect(s.getName(), isSelfTarget);
+                @Override
+                public String getDescription() {
+                    return "Saber uses " + item.getName() + "!";
+                }
             });
         }
     }
@@ -134,15 +152,6 @@ public class BattleScreen implements Screen {
             skillName.equals("Magic Res") ||
             skillName.equals("Endure") ||
             skillName.equals("Gulp"); // Skill Slime
-    }
-
-    public void onItemSelected(Consumable item) {
-        if(isPlayerTurn()) {
-            performPlayerAction(() -> {
-                item.use(hero);
-                renderer.playSkillEffect("Divine Light", true); // Efek heal di player
-            });
-        }
     }
 
     // --- BATTLE LOGIC ---
@@ -163,6 +172,10 @@ public class BattleScreen implements Screen {
     }
 
     private void performPlayerAction(Command action) {
+        // 1. Tampilkan Notifikasi Player
+        ui.showNotification(action.getDescription()); // <--- INI DIA
+
+        // 2. Eksekusi
         action.execute();
         ui.refreshStats(hero, enemy);
 
@@ -176,6 +189,12 @@ public class BattleScreen implements Screen {
 
     private void performEnemyTurn() {
         enemy.applyTurnEffects();
+        String actionText = enemy.act(hero);
+
+        // 2. Tampilkan Notifikasi Musuh
+        if (!actionText.isEmpty()) {
+            ui.showNotification(actionText);
+        }
         if (enemy.isDead()) { handleVictory(); return; }
 
         if (enemy.isStunned()) {
@@ -196,7 +215,8 @@ public class BattleScreen implements Screen {
         // Logic Reward & Save
         hero.getStats().addExp(enemy.getStats().getExpReward());
         hero.getStats().addManaCrystals(enemy.getStats().getCrystalReward());
-        com.FEA_3.frontend.Utils.NetworkManager.getInstance().savePlayer("User1", hero.getStats());
+        com.FEA_3.frontend.Utils.NetworkManager.getInstance()
+            .savePlayer("User1", hero.getStats(), null);
 
         Dialog win = new Dialog("VICTORY!", ResourceManager.getInstance().getSkin()) {
             @Override protected void result(Object o) { if(onVictoryAction != null) onVictoryAction.run(); }

@@ -23,8 +23,13 @@ public class NetworkManager {
         return instance;
     }
 
+    public interface SaveCallback {
+        void onSuccess();
+        void onFail(String msg);
+    }
+
     // --- FITUR SAVE ---
-    public void savePlayer(String userId, UnitStats stats) {
+    public void savePlayer(String userId, UnitStats stats, final SaveCallback callback) {
         HttpRequestBuilder requestBuilder = new HttpRequestBuilder();
         Net.HttpRequest httpRequest = requestBuilder.newRequest()
             .method(Net.HttpMethods.POST)
@@ -79,11 +84,19 @@ public class NetworkManager {
             @Override
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
                 System.out.println("SAVE SUCCESS: " + httpResponse.getResultAsString());
+
+                // BERI TAHU FRONTEND KALAU SUDAH SELESAI
+                if (callback != null) {
+                    Gdx.app.postRunnable(callback::onSuccess);
+                }
             }
 
             @Override
             public void failed(Throwable t) {
                 System.err.println("SAVE FAILED: " + t.getMessage());
+                if (callback != null) {
+                    Gdx.app.postRunnable(() -> callback.onFail(t.getMessage()));
+                }
             }
 
             @Override

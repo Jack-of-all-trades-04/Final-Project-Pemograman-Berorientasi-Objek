@@ -283,21 +283,33 @@ public class WorldMapScreen implements Screen {
         // Load progress chapter
         int playerProgress = game.playerStats.getUnlockedChapter();
 
-        if (playerProgress != reqChapter) {
-            // JIKA BELUM UNLOCK:
-            nodeBtn.setColor(Color.DARK_GRAY); // Gelapkan tombol visualnya
-            nodeBtn.setDisabled(true);         // Matikan fungsi tombol (opsional di level Actor)
+        boolean isLocked;
 
-            // Listener Khusus untuk menampilkan pesan "LOCKED"
+        if (type == NodeType.MAIN_STORY) {
+            // KHUSUS STORY: Strict Mode (Hanya bisa akses Chapter yang sedang aktif)
+            // Jika Progress 2, maka Node Ch 1 (sudah lewat) dan Node Ch 3 (belum sampai) akan KUNCI.
+            isLocked = (playerProgress != reqChapter);
+        } else {
+            // KHUSUS BATTLE & SHOP: Cumulative Mode (Area lama tetap terbuka)
+            // Jika Progress 2, Area Ch 1 tetap BUKA. Area Ch 3 KUNCI.
+            // Jadi selama progress kita >= reqChapter, node ini terbuka.
+            isLocked = (playerProgress < reqChapter);
+        }
+
+        if (isLocked) {
+            // JIKA TERKUNCI:
+            nodeBtn.setColor(Color.DARK_GRAY);
+            nodeBtn.setDisabled(true);
+
+            // Listener: Tampilkan pesan kenapa terkunci
             nodeBtn.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    // Tampilkan Dialog Bahwa Chapter Terkunci
                     showLockedDialog(reqChapter);
                 }
             });
         } else {
-            // JIKA SUDAH UNLOCK: Normal
+            // JIKA TERBUKA:
             nodeBtn.setColor(Color.WHITE);
             nodeBtn.addListener(new SoundListener());
             nodeBtn.addListener(new ClickListener() {
