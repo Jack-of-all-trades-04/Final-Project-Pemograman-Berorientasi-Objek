@@ -157,11 +157,11 @@ public class WorldMapScreen implements Screen {
             game.setScreen(new NarrativeScreen(game, 2));
         }, 2);
 
-        addNode(NodeType.MAIN_STORY, 880, 420, "Mage Academy (Ch.3)", skin, () -> {
+        addNode(NodeType.MAIN_STORY, 420, 100, "Coastline (Ch.3)", skin, () -> {
             game.setScreen(new NarrativeScreen(game, 3));
         }, 3);
 
-        addNode(NodeType.MAIN_STORY, 680, 100, "Old Battlefield (Ch.4)", skin, () -> {
+        addNode(NodeType.MAIN_STORY, 750, 120, "Old Battlefield (Ch.4)", skin, () -> {
             game.setScreen(new NarrativeScreen(game, 4));
         }, 4);
 
