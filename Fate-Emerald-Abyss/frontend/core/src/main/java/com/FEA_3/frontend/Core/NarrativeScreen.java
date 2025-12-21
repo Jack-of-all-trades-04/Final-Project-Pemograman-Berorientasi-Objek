@@ -229,6 +229,23 @@ public class NarrativeScreen implements Screen {
 
     private StoryStep[] getChapterTwoScript() {
         return new StoryStep[]{
+            line("[In the castle of royal capital]")
+                .setBackground("Background/Castle.jpeg"),
+            line("Sparking...")
+                .setSoundEffect("SFX/Spark.mp3"),
+            line("???: 'So, you have summoned me huh? I guess you are my master'"),
+            line("Kedati: 'I see, analyzing into your pattern of magical energy and origin, can I conclude that you are Rider?'"),
+            line("Kedati: 'No, your origin name is Prabu Siliwangi?'"),
+            line("Siliwangi: 'I see, so this is my master huh, how magnificent for recognizing my name with just magical analysis"),
+            line("Siliwangi: 'Alright, for this war then i will help you achieve victory'"),
+            line("[Somewhere in the castle]")
+                .setBackground("Background/Castle.jpeg"),
+            line("Berserker: 'So, what do you actually wish from this war, master?'"),
+            line("???: 'Unification of the world in one true power, only by achieving the omnipotent grail I can do that'"),
+            line("Berserker: 'Why do you want to unify this world?'"),
+            line("???: 'In my mind, this world is just too bleak, there is so much suffering, war, and injustice that always happens.'"),
+            line("???: 'By gaining the grail, I can chain all humanity in one state of rule so nobody can cause any mistreatment to each other.'"),
+            line("Berserker: 'I see, then I shall abide to your will and work through that'"),
             line("Ini chapter 2")
                 .setBattle(EnemyType.LANCER, "Background/Library.jpg")
         };
