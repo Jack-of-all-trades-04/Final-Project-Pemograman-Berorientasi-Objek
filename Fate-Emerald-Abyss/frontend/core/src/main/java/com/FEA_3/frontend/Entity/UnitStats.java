@@ -97,6 +97,15 @@ public class UnitStats {
         } else if (itemName.contains("Iron") || itemName.contains("Elixir") || itemName.contains("DEF")) {
             type = Consumable.ItemType.BUFF_DEF;
             value = 30;
+        } else if (itemName.contains("Attack") || itemName.contains("Strength")) {
+            type = Consumable.ItemType.BUFF_ATK;
+            value = 30; // 30%
+        } else if (itemName.contains("Accuracy") || itemName.contains("Focus")) {
+            type = Consumable.ItemType.BUFF_ACC;
+            value = 30; // 30%
+        } else if (itemName.contains("Crit") || itemName.contains("Luck")) {
+            type = Consumable.ItemType.BUFF_CRIT;
+            value = 20; // 20%
         }
 
         inventory.add(new Consumable(itemName, type, value, quantity));

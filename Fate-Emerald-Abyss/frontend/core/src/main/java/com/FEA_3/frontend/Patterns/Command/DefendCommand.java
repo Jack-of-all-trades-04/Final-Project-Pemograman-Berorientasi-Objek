@@ -9,6 +9,11 @@ public class DefendCommand implements Command {
     }
 
     @Override
+    public String getDescription() {
+        return self.getName() + " assumes defensive stance!";
+    }
+
+    @Override
     public void execute() {
         self.setDefending(true);
         System.out.println(self.getName() + " bersiap menahan serangan!");

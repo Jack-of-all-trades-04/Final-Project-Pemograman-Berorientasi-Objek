@@ -44,31 +44,29 @@ public class PlayerData {
     public PlayerData() {}
 
     // Constructor untuk New Game
+    // Constructor Backend
     public PlayerData(String id, String characterName) {
         this.id = id;
         this.characterName = characterName;
 
-        // --- LEVEL 1 STATS (Sesuai Spreadsheet) ---
         this.level = 1;
         this.currentExp = 0;
         this.maxExp = 100;
         this.manaCrystals = 0;
-        this.unlockedChapter = 1;
 
-        // Stats Dasar
-        this.maxHp = 98;    // Rumus: 80 + 18*1
-        this.currentHp = 98;
-        this.maxMp = 148;   // Rumus: 120 + 28*1
-        this.currentMp = 148;
+        // --- STATS BARU (BUFFED) ---
+        this.maxHp = 155;     // 130 + 25
+        this.currentHp = 155;
+        this.maxMp = 170;     // 140 + 30
+        this.currentMp = 170;
 
-        this.attackPower = 31; // Rumus: 25 + 6*1
-        this.defense = 12;     // Rumus: 10 + 2.5*1
-        this.speed = 12;       // Rumus: 12 + 0.8*1
+        this.attackPower = 39; // 32 + 7
+        this.defense = 22;     // 18 + 3.5 (Rounded Up)
+        this.speed = 15;       // 14 + 1
 
-        // Stats Probabilitas (Float)
-        this.critChance = 5.5f;   // 5 + 0.5*1
-        this.critDamage = 151.0f; // 150 + 1*1
-        this.accuracy = 90.5f;    // 90 + 0.5*1
+        this.critChance = 5.5f;
+        this.critDamage = 151.0f;
+        this.accuracy = 95.5f;
     }
 
     // --- GETTERS & SETTERS (Generate All via IDE: Alt+Insert) ---

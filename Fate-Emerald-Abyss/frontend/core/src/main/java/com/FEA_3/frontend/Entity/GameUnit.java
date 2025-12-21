@@ -29,6 +29,9 @@ public class GameUnit {
     private int slowDebuffTurns = 0;     // Blizzard
     private boolean nextHitGuaranteed = false; // Visual Calculus
     private boolean hasEndure = false; // Passive Endure
+    private int attackBuffTurns = 0;
+    private int accuracyBuffTurns = 0;
+    private int critBuffTurns = 0;
 
     // --- LOGIC UPDATE TURN (Panggil ini setiap awal giliran) ---
     public void applyTurnEffects() {
@@ -52,6 +55,9 @@ public class GameUnit {
         if (speedBuffTurns > 0) speedBuffTurns--;
         if (accuracyDebuffTurns > 0) accuracyDebuffTurns--;
         if (slowDebuffTurns > 0) slowDebuffTurns--;
+        if (attackBuffTurns > 0) attackBuffTurns--;
+        if (accuracyBuffTurns > 0) accuracyBuffTurns--;
+        if (critBuffTurns > 0) critBuffTurns--;
 
         // Reset Stun di awal turn (setelah efek skip turn diproses di BattleScreen)
         // isStunned = false; // Logic reset stun sebaiknya diatur di BattleScreen setelah skip
@@ -65,6 +71,8 @@ public class GameUnit {
         if (this.accuracyDebuffTurns > 0) {
             hitChance -= 25.0f;
         }
+
+        if (this.accuracyBuffTurns > 0) hitChance += 30.0f;
 
         // Cek Visual Calculus (Guaranteed Hit)
         if (this.nextHitGuaranteed) {
@@ -88,10 +96,26 @@ public class GameUnit {
 
         // 2. HITUNG DAMAGE DASAR (ATK vs DEF)
         // Rumus RPG Klasik: Damage = Atk * (100 / (100 + Def))
+        int rawAtk = stats.getAttackPower();
+
+        // --- TAMBAHAN LOGIC ATTACK POTION (+30%) ---
+        if (this.attackBuffTurns > 0) {
+            rawAtk += (int)(rawAtk * 0.30f);
+        }
+
         float damageMitigation = 100.0f / (100.0f + target.getStats().getDefense());
-        int finalDamage = (int) (stats.getAttackPower() * damageMitigation);
+        int finalDamage = (int) (rawAtk * damageMitigation);
 
         // 3. CEK CRITICAL
+        float critRate = stats.getCritChance();
+        float critDmgMult = stats.getCritDamage();
+
+        // --- TAMBAHAN LOGIC CRIT POTION (+20% Chance, +20% Damage) ---
+        if (this.critBuffTurns > 0) {
+            critRate += 20.0f;       // Tambah 20% Chance
+            critDmgMult += 20.0f;    // Tambah 20% Damage (misal 150% jadi 170%)
+        }
+
         boolean isCrit = false;
         if (rng.nextFloat() * 100 < stats.getCritChance()) {
             isCrit = true;
@@ -170,12 +194,13 @@ public class GameUnit {
         this.strategy = strategy;
     }
 
-    public void act(GameUnit target) {
+    public String act(GameUnit target) {
         if (strategy != null) {
-            // Minta strategi membuat keputusan, lalu eksekusi
             Command command = strategy.decideAction(this, target);
             command.execute();
+            return command.getDescription(); // Kembalikan teks deskripsi
         }
+        return "";
     }
 
     public void addObserver(UnitObserver observer) {
@@ -239,6 +264,9 @@ public class GameUnit {
     public void setSlowDebuff(int turns) { this.slowDebuffTurns = turns; }
     public void setNextHitGuaranteed(boolean val) { this.nextHitGuaranteed = val; }
     public void setHasEndure(boolean val) { this.hasEndure = val; }
+    public void setAttackBuff(int turns) { this.attackBuffTurns = turns; }
+    public void setAccuracyBuff(int turns) { this.accuracyBuffTurns = turns; }
+    public void setCritBuff(int turns) { this.critBuffTurns = turns; }
     public int getAttackPower() { return stats.getAttackPower(); }
     public String getName() { return stats.getName(); }
     public int getHp() { return stats.getCurrentHp(); }
@@ -282,4 +310,8 @@ public class GameUnit {
     public boolean isHasEndure() {
         return hasEndure;
     }
+
+    public int getAttackBuffTurns() { return attackBuffTurns; }
+    public int getAccuracyBuffTurns() { return accuracyBuffTurns; }
+    public int getCritBuffTurns() { return critBuffTurns; }
 }

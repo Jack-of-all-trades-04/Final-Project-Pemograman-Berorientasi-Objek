@@ -3,6 +3,8 @@ package com.FEA_3.frontend.Patterns.Strategy;
 import com.FEA_3.frontend.Entity.GameUnit;
 import com.FEA_3.frontend.Entity.Skill;
 import com.FEA_3.frontend.Patterns.Command.Command; // Import Command
+import com.FEA_3.frontend.Patterns.Command.SkillCommand;
+
 import java.util.List;
 import java.util.Random;
 
@@ -12,11 +14,11 @@ public class SmartAIStrategy implements BattleStrategy {
     @Override
     public Command decideAction(GameUnit self, GameUnit target) {
         // 1. Cek HP Rendah (Heal Priority)
+        // Hanya jalan jika HP < 30%
         if (self.getStats().getCurrentHp() < self.getStats().getMaxHp() * 0.3) {
             Skill healSkill = findSkillByName(self, "Gulp");
             if (healSkill != null && canCast(self, healSkill)) {
-                // Return Command untuk Cast Skill Heal
-                return () -> castSkill(self, target, healSkill);
+                return new SkillCommand(self, target, healSkill);
             }
         }
 
@@ -28,16 +30,12 @@ public class SmartAIStrategy implements BattleStrategy {
 
             if (!usableSkills.isEmpty()) {
                 Skill chosenSkill = usableSkills.get(rng.nextInt(usableSkills.size()));
-                // Return Command untuk Cast Skill Serang
-                return () -> castSkill(self, target, chosenSkill);
+                return new SkillCommand(self, target, chosenSkill);
             }
         }
 
         // 3. Fallback: Return Command untuk Basic Attack
-        return () -> {
-            System.out.println(self.getName() + " performs Basic Attack.");
-            self.attackTarget(target);
-        };
+        return new com.FEA_3.frontend.Patterns.Command.AttackCommand(self, target);
     }
 
     // --- Helper Methods (Tetap Sama) ---

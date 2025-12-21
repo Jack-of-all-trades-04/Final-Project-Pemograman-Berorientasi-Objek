@@ -15,6 +15,11 @@ public class AttackCommand implements Command {
     }
 
     @Override
+    public String getDescription() {
+        return attacker.getName() + " attacks!";
+    }
+
+    @Override
     public void execute() {
         // 1. Play Sound
         Sound sfx = ResourceManager.getInstance().getSound("Audio/Sound_Effect/Attack1.wav");

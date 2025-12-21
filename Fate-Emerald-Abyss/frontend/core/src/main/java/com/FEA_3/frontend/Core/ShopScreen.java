@@ -45,7 +45,10 @@ public class ShopScreen implements Screen {
     private ShopItem[] shopItems = {
         new ShopItem("Health Potion", 50, "Pulihkan 50 HP", "Consumable/HP Potion.png"),
         new ShopItem("Mana Potion", 80, "Pulihkan 30 MP", "Consumable/MP Potion.png"),
-        new ShopItem("Iron Elixir", 65, "3-Turn 30% DEF", "Consumable/Iron Elixir.png")
+        new ShopItem("Iron Elixir", 65, "3-Turn 30% DEF", "Consumable/Iron Elixir.png"),
+        new ShopItem("Attack Potion", 100, "3-Turn +30% ATK", "Consumable/MP Potion.png"),
+        new ShopItem("Focus Potion", 90, "3-Turn +30% ACC", "Consumable/MP Potion.png"),
+        new ShopItem("Crit Potion", 120, "2-Turn +20% Crit", "Consumable/MP Potion.png")
     };
 
     public ShopScreen(Main game) {
@@ -217,7 +220,7 @@ public class ShopScreen implements Screen {
                     buyBtn.setDisabled(true);
 
                     // 4. SIMPAN KE SERVER (Penting!)
-                    NetworkManager.getInstance().savePlayer(userId, currentStats);
+                    NetworkManager.getInstance().savePlayer(userId, currentStats,null);
 
                     // Feedback Visual Sukses
                     buyBtn.setColor(Color.GREEN);
