@@ -111,7 +111,21 @@ public class WorldMapScreen implements Screen {
         skillBtn.addListener(new SoundListener());
         stage.addActor(skillBtn);
 
-        // 3. TOMBOL MAIN MENU (Kanan Atas)
+        // 3. TOMBOL ITEMS (Sebelah Skills)
+        TextButton itemBtn = new TextButton("ITEMS", skin);
+        itemBtn.setPosition(240, screenH - 60);
+        itemBtn.setSize(100, 40);
+        itemBtn.addListener(new SoundListener());
+        itemBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                // Pastikan class InventoryScreen sudah ada
+                game.setScreen(new InventoryScreen(game));
+            }
+        });
+        stage.addActor(itemBtn);
+
+        // 4. TOMBOL MAIN MENU (Kanan Atas)
         TextButton menuBtn = new TextButton("MENU", skin);
         menuBtn.setPosition(screenW - 120, screenH - 60); // Pojok Kanan
         menuBtn.setSize(100, 40);
