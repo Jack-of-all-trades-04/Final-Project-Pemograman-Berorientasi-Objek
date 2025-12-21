@@ -45,7 +45,10 @@ public class MainMenuScreen implements Screen {
         ResourceManager.getInstance().loadAssets();
         bgm = ResourceManager.getInstance().getMusic("Soundtrack/MainMenu.mp3");
         bgm.setLooping(true);
-        bgm.play();
+        ResourceManager.getInstance().playMusic(
+            "Soundtrack/MainMenu.mp3",
+            game.settings.getBgmVolume()
+        );
 
         try {
             backgroundTexture = new Texture(Gdx.files.internal("Background/MainMenu.png"));
@@ -86,14 +89,17 @@ public class MainMenuScreen implements Screen {
                             .loadPlayer("User1", new com.FEA_3.frontend.Utils.NetworkManager.LoadCallback() {
                                 @Override public void onSuccess(UnitStats stats) {
                                     game.playerStats = stats;
+                                    bgm.stop();
                                     game.setScreen(new NarrativeScreen(game, 1));
                                 }
                                 @Override public void onFail(String msg) {
+                                    bgm.stop();
                                     System.err.println("Error creating new game: " + msg);
                                 }
                             });
                     }
                     @Override public void onFail(String msg) {
+                        bgm.stop();
                         System.err.println("Failed to delete save data. Connection error?");
                     }
                 });
@@ -104,9 +110,11 @@ public class MainMenuScreen implements Screen {
                 .loadPlayer("User1", new com.FEA_3.frontend.Utils.NetworkManager.LoadCallback() {
                     @Override public void onSuccess(UnitStats stats) {
                         game.playerStats = stats;
+                        bgm.stop();
                         game.setScreen(new WorldMapScreen(game));
                     }
                     @Override public void onFail(String msg) {
+                        bgm.stop();
                         System.err.println("Load Failed: " + msg);
                     }
                 });
@@ -190,5 +198,5 @@ public class MainMenuScreen implements Screen {
     @Override public void show() { Gdx.input.setInputProcessor(stage); }
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() { bgm.stop(); }
+    @Override public void hide() { }
 }

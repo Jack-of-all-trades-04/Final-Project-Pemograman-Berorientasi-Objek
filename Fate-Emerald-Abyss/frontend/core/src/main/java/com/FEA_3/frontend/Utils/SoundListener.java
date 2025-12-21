@@ -1,5 +1,6 @@
 package com.FEA_3.frontend.Utils;
 
+import com.FEA_3.frontend.Core.Settings;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
