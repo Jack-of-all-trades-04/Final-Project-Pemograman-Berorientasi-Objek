@@ -65,14 +65,37 @@ public class UnitFactory {
         SkillDatabase.loadSaberSkills(hero);
     }
 
+    public static int getEnemyFrameCount(EnemyType type) {
+        switch (type) {
+            // Sesuaikan angka ini dengan jumlah gambar di Sprite Sheet Anda!
+
+            case ASSASSIN:  return 10;
+            case LANCER:    return 8;
+            case RIDER:     return 7;
+            case PRETENDER: return 3;
+
+            // Bosses
+            case FARHAT:    return 1;
+            case MANDA:     return 1;
+
+            // Grinding Mobs
+            case ANOMIMUS:  return 1;
+            case BEELING:   return 1;
+            case SLIME:     return 1;
+            case GOLEM:     return 1;
+
+            default: return 1; // Fallback (Gambar diam/statis)
+        }
+    }
+
     public static Texture getEnemyTexture(EnemyType type) {
         // ... (Kode texture Anda tetap sama, tidak perlu diubah) ...
         String path;
         switch (type) {
-            case ASSASSIN: path = "Entity/Enemy/Assasin/Idle1.png"; break;
-            case LANCER: path = "Entity/Enemy/Lancer/Idle1.png"; break;
-            case RIDER: path = "Entity/Enemy/Rider/Idle1.png"; break;
-            case PRETENDER: path = "Entity/Enemy/Pretender/Idle1.png"; break;
+            case ASSASSIN: path = "Entity/Enemy/Assasin/Assasin.png"; break;
+            case LANCER: path = "Entity/Enemy/Lancer/Lancer.png"; break;
+            case RIDER: path = "Entity/Enemy/Rider/Rider.png"; break;
+            case PRETENDER: path = "Entity/Enemy/Pretender/Pretender.png"; break;
             case ANOMIMUS: path = "Entity/Enemy/Anomimus/Idle/Idle0.png"; break;
             case BEELING: path = "Entity/Enemy/Beeling/Idle/Idle0.png"; break;
             case FARHAT: path = "Entity/Enemy/Farhat/Idle/Idle (1).png"; break;
