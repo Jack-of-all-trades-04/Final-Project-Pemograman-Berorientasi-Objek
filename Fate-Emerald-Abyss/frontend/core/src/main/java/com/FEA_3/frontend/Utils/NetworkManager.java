@@ -14,7 +14,7 @@ import java.util.List;
 
 public class NetworkManager {
     private static NetworkManager instance;
-    private final String BASE_URL = "http://localhost:8080/api"; // Sesuaikan port
+    private final String BASE_URL = "http://localhost:9090/api"; // Sesuaikan port
 
     private NetworkManager() {}
 
