@@ -71,7 +71,7 @@ public class NarrativeScreen implements Screen {
     private int scriptIndex = 0;
 
     // Asset Gambar, SFX, Karakter, dan Soundtrack untuk VN
-    private Texture characterImg, suspiciousGuy, saberImg, pretenderImg, lancerImg, lancerBattleImg, ameliaImg;
+    private Texture characterImg, suspiciousGuy, saberImg, pretenderImg, lancerImg, lancerBattleImg, ameliaImg, riderImg, charlotteImg, casterImg, fionaImg;
     private Texture backgroundTexture;
     private Music currentSoundtrack;
     private String currentSoundtrackPath = "";
@@ -94,6 +94,10 @@ public class NarrativeScreen implements Screen {
         ameliaImg = getTex("Entity/Character/Amelia.png");
         lancerImg = getTex("Entity/Character/Noel.png");
         lancerBattleImg = getTex("Entity/Character/NoelBattle.png");
+        riderImg = getTex("Entity/Character/Rider.png");
+        charlotteImg = getTex("Entity/Character/Charlotte.png");
+        casterImg = getTex("Entity/Character/Caster.png");
+        fionaImg = getTex("Entity/Character/Fiona.png");
 
         // PERUBAHAN DISINI: Ambil texture background dari Resource Manager
         backgroundTexture = getTex("Background/Temps.png");
@@ -572,10 +576,11 @@ public class NarrativeScreen implements Screen {
 
     // drawCharacter() digunakan untuk memudahkan render karakter (helper)
     private void drawCharacter(Texture texture, boolean isRightSide) {
-        float width = 300;
-        float height = 450;
+        float width = 420;
+        float height = 570;
         float padding = 50;
         float x;
+
 
         if (isRightSide) {
             x = Gdx.graphics.getWidth() - width - padding;
@@ -620,6 +625,18 @@ public class NarrativeScreen implements Screen {
         }
         else if (currentText.startsWith("Lancer")) {
             drawCharacter(lancerImg, true);
+        }
+        else if (currentText.startsWith("Rider")) {
+            drawCharacter(riderImg, true);
+        }
+        else if (currentText.startsWith("Charlotte")) {
+            drawCharacter(charlotteImg, true);
+        }
+        else if (currentText.startsWith("Caster")) {
+            drawCharacter(casterImg, true);
+        }
+        else if (currentText.startsWith("Fiona")) {
+            drawCharacter(fionaImg, true);
         }
         stage.getBatch().end();
 
